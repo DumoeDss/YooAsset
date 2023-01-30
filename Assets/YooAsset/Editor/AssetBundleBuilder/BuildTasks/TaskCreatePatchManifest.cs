@@ -39,7 +39,7 @@ namespace YooAsset.Editor
 			patchManifest.PackageName = buildParameters.PackageName;
 			patchManifest.PackageVersion = buildParameters.PackageVersion;
 			patchManifest.BundleList = GetAllPatchBundle(context);
-			patchManifest.AssetList = GetAllPatchAsset(context, patchManifest);
+			patchManifest.AssetList = GetAllPatchAsset(context, patchManifest, patchManifest.PackageName);
 
 			// 更新Unity内置资源包的引用关系
 			string shadersBunldeName = YooAssetSettingsData.GetUnityShadersBundleFullName(buildMapContext.UniqueBundleName, buildParameters.PackageName);
@@ -112,42 +112,49 @@ namespace YooAsset.Editor
 		/// <summary>
 		/// 获取资源列表
 		/// </summary>
-		private List<PatchAsset> GetAllPatchAsset(BuildContext context, PatchManifest patchManifest)
+		private List<PatchAsset> GetAllPatchAsset(BuildContext context, PatchManifest patchManifest, string package)
 		{
 			var buildMapContext = context.GetContextObject<BuildMapContext>();
 
 			List<PatchAsset> result = new List<PatchAsset>(1000);
 			foreach (var bundleInfo in buildMapContext.BundleInfos)
 			{
-				var assetInfos = bundleInfo.GetAllPatchAssetInfos();
-				foreach (var assetInfo in assetInfos)
-				{
-					PatchAsset patchAsset = new PatchAsset();
-					if (buildMapContext.EnableAddressable)
-						patchAsset.Address = assetInfo.Address;
-					else
-						patchAsset.Address = string.Empty;
-					patchAsset.AssetPath = assetInfo.AssetPath;
-					patchAsset.AssetTags = assetInfo.AssetTags.ToArray();
-					patchAsset.BundleID = GetAssetBundleID(assetInfo.GetBundleName(), patchManifest);
-					patchAsset.DependIDs = GetAssetBundleDependIDs(patchAsset.BundleID, assetInfo, patchManifest);
-					result.Add(patchAsset);
+				if (bundleInfo.Package == package)
+                {
+					var assetInfos = bundleInfo.GetAllPatchAssetInfos();
+					foreach (var assetInfo in assetInfos)
+					{
+						PatchAsset patchAsset = new PatchAsset();
+						if (buildMapContext.EnableAddressable)
+							patchAsset.Address = assetInfo.Address;
+						else
+							patchAsset.Address = string.Empty;
+						patchAsset.AssetPath = assetInfo.AssetPath;
+						patchAsset.AssetTags = assetInfo.AssetTags.ToArray();
+						patchAsset.BundleID = assetInfo.GetBundleName();
+						patchAsset.DependIDs = GetAssetBundleDependIDs(patchAsset.BundleID, assetInfo, patchManifest);
+						result.Add(patchAsset);
+					}
 				}
+					
 			}
 			return result;
 		}
-		private int[] GetAssetBundleDependIDs(int mainBundleID, BuildAssetInfo assetInfo, PatchManifest patchManifest)
+		private string[] GetAssetBundleDependIDs(string mainBundleID, BuildAssetInfo assetInfo, PatchManifest patchManifest)
 		{
-			List<int> result = new List<int>();
-			foreach (var dependAssetInfo in assetInfo.AllDependAssetInfos)
-			{
-				if (dependAssetInfo.HasBundleName())
+			List<string> result = new List<string>();
+			if (assetInfo.AllDependAssetInfos != null)
+            {
+				foreach (var dependAssetInfo in assetInfo.AllDependAssetInfos)
 				{
-					int bundleID = GetAssetBundleID(dependAssetInfo.GetBundleName(), patchManifest);
-					if (mainBundleID != bundleID)
+					if (dependAssetInfo.HasBundleName())
 					{
-						if (result.Contains(bundleID) == false)
-							result.Add(bundleID);
+						string bundleID = dependAssetInfo.GetBundleName(); 
+						if (mainBundleID != bundleID)
+						{
+							if (result.Contains(bundleID) == false)
+								result.Add(bundleID);
+						}
 					}
 				}
 			}
@@ -162,6 +169,7 @@ namespace YooAsset.Editor
 			}
 			throw new Exception($"Not found bundle name : {bundleName}");
 		}
+
 
 		/// <summary>
 		/// 更新Unity内置资源包的引用关系
@@ -182,8 +190,8 @@ namespace YooAsset.Editor
 
 			// 获取着色器资源包索引
 			Predicate<PatchBundle> predicate = new Predicate<PatchBundle>(s => s.BundleName == shadersBunldeName);
-			int shaderBundleId = patchManifest.BundleList.FindIndex(predicate);
-			if (shaderBundleId == -1)
+			var shaderBundle = patchManifest.BundleList.Find(s => s.BundleName == shadersBunldeName);
+			if(shaderBundle == null)
 				throw new Exception("没有发现着色器资源包！");
 
 			// 检测依赖交集并更新依赖ID
@@ -193,9 +201,9 @@ namespace YooAsset.Editor
 				List<string> conflictAssetPathList = dependBundles.Intersect(shaderBundleReferenceList).ToList();
 				if (conflictAssetPathList.Count > 0)
 				{
-					List<int> newDependIDs = new List<int>(patchAsset.DependIDs);
-					if (newDependIDs.Contains(shaderBundleId) == false)
-						newDependIDs.Add(shaderBundleId);
+					List<string> newDependIDs = new List<string>(patchAsset.DependIDs);
+					if (newDependIDs.Contains(shaderBundle.BundleName) == false)
+						newDependIDs.Add(shaderBundle.BundleName);
 					patchAsset.DependIDs = newDependIDs.ToArray();
 				}
 			}
@@ -203,12 +211,11 @@ namespace YooAsset.Editor
 		private List<string> GetPatchAssetAllDependBundles(PatchManifest patchManifest, PatchAsset patchAsset)
 		{
 			List<string> result = new List<string>();
-			string mainBundle = patchManifest.BundleList[patchAsset.BundleID].BundleName;
+			string mainBundle = patchAsset.BundleID;
 			result.Add(mainBundle);
 			foreach (var dependID in patchAsset.DependIDs)
 			{
-				string dependBundle = patchManifest.BundleList[dependID].BundleName;
-				result.Add(dependBundle);
+				result.Add(dependID);
 			}
 			return result;
 		}

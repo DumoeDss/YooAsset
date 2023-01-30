@@ -47,6 +47,10 @@ namespace YooAsset.Editor
 		/// </summary>
 		public string BundleName { private set; get; }
 
+		public string Package { private set; get; }
+
+		public bool IncludeInBuild { private set; get; }
+
 		/// <summary>
 		/// 参与构建的资源列表
 		/// 注意：不包含零依赖资源
@@ -100,9 +104,11 @@ namespace YooAsset.Editor
 		}
 
 
-		public BuildBundleInfo(string bundleName)
+		public BuildBundleInfo(string bundleName, string package, bool includeInBuild)
 		{
 			BundleName = bundleName;
+			Package = package;
+			IncludeInBuild = includeInBuild;
 		}
 
 		/// <summary>

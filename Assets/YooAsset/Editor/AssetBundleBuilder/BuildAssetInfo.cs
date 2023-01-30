@@ -53,6 +53,12 @@ namespace YooAsset.Editor
 		/// </summary>
 		public List<BuildAssetInfo> AllDependAssetInfos { private set; get; }
 
+		/// <summary>
+		/// 包名
+		/// </summary>
+		public string Package { private set; get; }
+
+		public bool IncludeInBuild { private set; get; }
 
 		public BuildAssetInfo(ECollectorType collectorType, string mainBundleName, string address, string assetPath, bool isRawAsset)
 		{

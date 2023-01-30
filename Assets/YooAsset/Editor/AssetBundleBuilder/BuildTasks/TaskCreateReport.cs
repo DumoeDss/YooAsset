@@ -74,7 +74,7 @@ namespace YooAsset.Editor
 			buildReport.AssetInfos = new List<ReportAssetInfo>(patchManifest.AssetList.Count);
 			foreach (var patchAsset in patchManifest.AssetList)
 			{
-				var mainBundle = patchManifest.BundleList[patchAsset.BundleID];
+				var mainBundle = patchManifest.BundleList.Find(_ => _.BundleName == patchAsset.BundleID);
 				ReportAssetInfo reportAssetInfo = new ReportAssetInfo();
 				reportAssetInfo.Address = patchAsset.Address;
 				reportAssetInfo.AssetPath = patchAsset.AssetPath;
@@ -116,9 +116,9 @@ namespace YooAsset.Editor
 		private List<string> GetDependBundles(PatchManifest patchManifest, PatchAsset patchAsset)
 		{
 			List<string> dependBundles = new List<string>(patchAsset.DependIDs.Length);
-			foreach (int index in patchAsset.DependIDs)
+			foreach (var dependBundleName in patchAsset.DependIDs)
 			{
-				string dependBundleName = patchManifest.BundleList[index].BundleName;
+				//string dependBundleName = patchManifest.BundleList[index].BundleName;
 				dependBundles.Add(dependBundleName);
 			}
 			return dependBundles;
