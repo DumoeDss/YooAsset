@@ -39,8 +39,11 @@ namespace YooAsset.Editor
 			patchManifest.PackageName = buildParameters.PackageName;
 			patchManifest.PackageVersion = buildParameters.PackageVersion;
 			patchManifest.BundleList = GetAllPatchBundle(context);
-			patchManifest.AssetList = GetAllPatchAsset(context, patchManifest, patchManifest.PackageName);
-
+			List<string> bundleNameList;
+			List<string> dependBundleNameList;
+			patchManifest.AssetList = GetAllPatchAsset(context, patchManifest, patchManifest.PackageName,out bundleNameList, out dependBundleNameList);
+			patchManifest.BundleNameList = bundleNameList.ToArray();
+			patchManifest.DependBundleNameList = dependBundleNameList.ToArray();
 			// 更新Unity内置资源包的引用关系
 			string shadersBunldeName = YooAssetSettingsData.GetUnityShadersBundleFullName(buildMapContext.UniqueBundleName, buildParameters.PackageName);
 			if (buildParameters.BuildPipeline == EBuildPipeline.ScriptableBuildPipeline)
@@ -112,11 +115,14 @@ namespace YooAsset.Editor
 		/// <summary>
 		/// 获取资源列表
 		/// </summary>
-		private List<PatchAsset> GetAllPatchAsset(BuildContext context, PatchManifest patchManifest, string package)
+		private List<PatchAsset> GetAllPatchAsset(BuildContext context, PatchManifest patchManifest, string package, out List<string> bundleNameList, out List<string> dependBundleNameList)
 		{
 			var buildMapContext = context.GetContextObject<BuildMapContext>();
 
 			List<PatchAsset> result = new List<PatchAsset>(1000);
+			 bundleNameList = new List<string>();
+			 dependBundleNameList = new List<string>();
+
 			foreach (var bundleInfo in buildMapContext.BundleInfos)
 			{
 				if (bundleInfo.Package == package)
@@ -131,29 +137,48 @@ namespace YooAsset.Editor
 							patchAsset.Address = string.Empty;
 						patchAsset.AssetPath = assetInfo.AssetPath;
 						patchAsset.AssetTags = assetInfo.AssetTags.ToArray();
-						patchAsset.BundleID = assetInfo.GetBundleName();
-						patchAsset.DependIDs = GetAssetBundleDependIDs(patchAsset.BundleID, assetInfo, patchManifest);
+						var bundleName = assetInfo.GetBundleName();
+						if (bundleNameList.Contains(bundleName))
+                        {
+							patchAsset.BundleID = bundleNameList.IndexOf(bundleName);
+						}
+						else
+                        {
+							bundleNameList.Add(assetInfo.GetBundleName());
+							patchAsset.BundleID = bundleNameList.Count - 1;
+						}
+						patchAsset.DependIDs = GetAssetBundleDependIDs(bundleName, assetInfo, patchManifest,ref dependBundleNameList);
 						result.Add(patchAsset);
 					}
-				}
+                }
 					
 			}
 			return result;
 		}
-		private string[] GetAssetBundleDependIDs(string mainBundleID, BuildAssetInfo assetInfo, PatchManifest patchManifest)
+		private int[] GetAssetBundleDependIDs(string mainBundleName, BuildAssetInfo assetInfo, PatchManifest patchManifest, ref List<string> dependBundleNameList)
 		{
-			List<string> result = new List<string>();
+			List<int> result = new List<int>();
+			if(dependBundleNameList==null)
+				dependBundleNameList = new List<string>();
 			if (assetInfo.AllDependAssetInfos != null)
             {
 				foreach (var dependAssetInfo in assetInfo.AllDependAssetInfos)
 				{
 					if (dependAssetInfo.HasBundleName())
 					{
-						string bundleID = dependAssetInfo.GetBundleName(); 
-						if (mainBundleID != bundleID)
-						{
-							if (result.Contains(bundleID) == false)
+						var bundleName = dependAssetInfo.GetBundleName();
+                        if (dependBundleNameList.Contains(bundleName))
+                        {
+							var bundleID = dependBundleNameList.IndexOf(bundleName);
+							if (mainBundleName != bundleName && !result.Contains(bundleID))
+                            {
 								result.Add(bundleID);
+							}
+						}
+                        else
+                        {
+							dependBundleNameList.Add(bundleName);
+							result.Add(dependBundleNameList.Count-1);
 						}
 					}
 				}
@@ -201,9 +226,25 @@ namespace YooAsset.Editor
 				List<string> conflictAssetPathList = dependBundles.Intersect(shaderBundleReferenceList).ToList();
 				if (conflictAssetPathList.Count > 0)
 				{
-					List<string> newDependIDs = new List<string>(patchAsset.DependIDs);
-					if (newDependIDs.Contains(shaderBundle.BundleName) == false)
-						newDependIDs.Add(shaderBundle.BundleName);
+					List<string> newDependNames = new List<string>();
+					for (int i = 0; i < conflictAssetPathList.Count; i++)
+                    {
+						if (!newDependNames.Contains(conflictAssetPathList[i]) )
+							newDependNames.Add(conflictAssetPathList[i]);
+                    }
+                    
+					if (newDependNames.Contains(shaderBundle.BundleName) == false)
+						newDependNames.Add(shaderBundle.BundleName);
+					var newDependIDs = new List<int>();
+					var dependNameList = new List<string>(patchManifest.DependBundleNameList);
+					for (int i = 0; i < newDependNames.Count; i++)
+                    {
+						var id = dependNameList.IndexOf(newDependNames[i]);
+						if (!newDependIDs.Contains(id))
+                        {
+							newDependIDs.Add(id);
+						}
+					}
 					patchAsset.DependIDs = newDependIDs.ToArray();
 				}
 			}
@@ -211,11 +252,11 @@ namespace YooAsset.Editor
 		private List<string> GetPatchAssetAllDependBundles(PatchManifest patchManifest, PatchAsset patchAsset)
 		{
 			List<string> result = new List<string>();
-			string mainBundle = patchAsset.BundleID;
+			string mainBundle = patchManifest.BundleNameList[patchAsset.BundleID];
 			result.Add(mainBundle);
 			foreach (var dependID in patchAsset.DependIDs)
 			{
-				result.Add(dependID);
+				result.Add(patchManifest.DependBundleNameList[dependID]);
 			}
 			return result;
 		}

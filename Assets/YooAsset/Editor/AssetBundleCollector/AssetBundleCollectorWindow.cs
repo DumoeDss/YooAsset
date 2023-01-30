@@ -34,6 +34,7 @@ namespace YooAsset.Editor
 		private ListView _packageListView;
 		private TextField _packageNameTxt;
 		private TextField _packageDescTxt;
+		private Toggle _includeInBuildToogle;
 
 		private VisualElement _groupContainer;
 		private ListView _groupListView;
@@ -184,6 +185,17 @@ namespace YooAsset.Editor
 
 				// 分组容器
 				_groupContainer = root.Q("GroupContainer");
+
+				_includeInBuildToogle = _groupContainer.Q<Toggle>("IncludeInBuild");
+				_includeInBuildToogle.RegisterValueChangedCallback(evt =>
+				{
+					var selectPackage = _packageListView.selectedItem as AssetBundleCollectorPackage;
+					if (selectPackage != null)
+					{
+						selectPackage.IncludeInBuild = evt.newValue;
+						AssetBundleCollectorSettingData.ModifyPackage(selectPackage);
+					}
+				});
 
 				// 分组名称
 				_groupNameTxt = root.Q<TextField>("GroupName");
@@ -399,6 +411,7 @@ namespace YooAsset.Editor
 			{
 				_groupContainer.visible = false;
 				_collectorContainer.visible = false;
+				_includeInBuildToogle.value = false;
 				return;
 			}
 
@@ -406,6 +419,7 @@ namespace YooAsset.Editor
 			_lastModifyPackageIndex = _packageListView.selectedIndex;
 			_packageNameTxt.SetValueWithoutNotify(selectPackage.PackageName);
 			_packageDescTxt.SetValueWithoutNotify(selectPackage.PackageDesc);
+			_includeInBuildToogle.SetValueWithoutNotify(selectPackage.IncludeInBuild);
 			FillGroupViewData();
 		}
 		private void AddPackageBtn_clicked()
@@ -668,6 +682,10 @@ namespace YooAsset.Editor
 		}
 		private void BindCollectorListViewItem(VisualElement element, int index)
 		{
+			var selectPackage = _packageListView.selectedItem as AssetBundleCollectorPackage;
+			if (selectPackage == null)
+				return;
+
 			var selectGroup = _groupListView.selectedItem as AssetBundleCollectorGroup;
 			if (selectGroup == null)
 				return;
@@ -682,7 +700,7 @@ namespace YooAsset.Editor
 			foldout.RegisterValueChangedCallback(evt =>
 			{
 				if (evt.newValue)
-					RefreshFoldout(foldout, selectGroup, collector);
+					RefreshFoldout(foldout, selectPackage, selectGroup, collector);
 				else
 					foldout.Clear();
 			});
@@ -714,7 +732,7 @@ namespace YooAsset.Editor
 				AssetBundleCollectorSettingData.ModifyCollector(selectGroup, collector);
 				if (foldout.value)
 				{
-					RefreshFoldout(foldout, selectGroup, collector);
+					RefreshFoldout(foldout, selectPackage, selectGroup, collector);
 				}
 			});
 
@@ -727,7 +745,7 @@ namespace YooAsset.Editor
 				AssetBundleCollectorSettingData.ModifyCollector(selectGroup, collector);
 				if (foldout.value)
 				{
-					RefreshFoldout(foldout, selectGroup, collector);
+					RefreshFoldout(foldout, selectPackage, selectGroup, collector);
 				}
 			});
 
@@ -744,7 +762,7 @@ namespace YooAsset.Editor
 					AssetBundleCollectorSettingData.ModifyCollector(selectGroup, collector);
 					if (foldout.value)
 					{
-						RefreshFoldout(foldout, selectGroup, collector);
+						RefreshFoldout(foldout, selectPackage, selectGroup, collector);
 					}
 				});
 			}
@@ -760,7 +778,7 @@ namespace YooAsset.Editor
 				AssetBundleCollectorSettingData.ModifyCollector(selectGroup, collector);
 				if (foldout.value)
 				{
-					RefreshFoldout(foldout, selectGroup, collector);
+					RefreshFoldout(foldout, selectPackage, selectGroup, collector);
 				}
 			});
 
@@ -775,7 +793,7 @@ namespace YooAsset.Editor
 				AssetBundleCollectorSettingData.ModifyCollector(selectGroup, collector);
 				if (foldout.value)
 				{
-					RefreshFoldout(foldout, selectGroup, collector);
+					RefreshFoldout(foldout, selectPackage, selectGroup, collector);
 				}
 			});
 
@@ -797,7 +815,7 @@ namespace YooAsset.Editor
 				AssetBundleCollectorSettingData.ModifyCollector(selectGroup, collector);
 			});
 		}
-		private void RefreshFoldout(Foldout foldout, AssetBundleCollectorGroup group, AssetBundleCollector collector)
+		private void RefreshFoldout(Foldout foldout, AssetBundleCollectorPackage package, AssetBundleCollectorGroup group, AssetBundleCollector collector)
 		{
 			// 清空旧元素
 			foldout.Clear();
@@ -815,7 +833,7 @@ namespace YooAsset.Editor
 				try
 				{
 					CollectCommand command = new CollectCommand(EBuildMode.DryRunBuild, _enableAddressableToogle.value);
-					collectAssetInfos = collector.GetAllCollectAssets(command, group);
+					collectAssetInfos = collector.GetAllCollectAssets(command, package, group);
 				}
 				catch (System.Exception e)
 				{

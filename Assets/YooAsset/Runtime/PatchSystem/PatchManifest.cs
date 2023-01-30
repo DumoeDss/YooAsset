@@ -47,6 +47,9 @@ namespace YooAsset
 		/// </summary>
 		public List<PatchBundle> BundleList = new List<PatchBundle>();
 
+		public string[] BundleNameList;
+		public string[] DependBundleNameList;
+
 
 		/// <summary>
 		/// 资源包集合（提供BundleName获取PatchBundle）
@@ -175,7 +178,7 @@ namespace YooAsset
 			if (AssetDic.TryGetValue(assetPath, out PatchAsset patchAsset))
 			{
 				var bundleID = patchAsset.BundleID;
-				var patchBundle = BundleList.Find(_ => _.BundleName == bundleID);
+				var patchBundle = BundleList.Find(_ => _.BundleName == BundleNameList[bundleID]);
 				if (patchBundle != null)
 				{
 					return patchBundle;
@@ -200,8 +203,9 @@ namespace YooAsset
 			if (AssetDic.TryGetValue(assetPath, out PatchAsset patchAsset))
 			{
 				List<PatchBundle> result = new List<PatchBundle>(patchAsset.DependIDs.Length);
-				foreach (var dependName in patchAsset.DependIDs)
+				foreach (var dependID in patchAsset.DependIDs)
 				{
+					var dependName = DependBundleNameList[dependID];
 					if (!dependName.Contains("@"))
 					{
 						var dependPatchBundle = BundleList.Find(_ => _.BundleName == dependName);
@@ -211,7 +215,7 @@ namespace YooAsset
 						}
 						else
 						{
-							throw new Exception($"Invalid bundle id : {dependName} Asset path : {assetPath}");
+							throw new Exception($"Invalid bundle id : {dependID} Asset path : {assetPath}");
 						}
 					}
 				}

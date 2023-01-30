@@ -22,6 +22,11 @@ namespace YooAsset
 		public string PackageName { private set; get; }
 
 		/// <summary>
+		/// 依赖的包裹名
+		/// </summary>
+		public List<string> DependeciesPackageNames { private set; get; }
+
+		/// <summary>
 		/// 初始化状态
 		/// </summary>
 		public EOperationStatus InitializeStatus

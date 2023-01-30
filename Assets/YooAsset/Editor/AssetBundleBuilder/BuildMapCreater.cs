@@ -42,7 +42,8 @@ namespace YooAsset.Editor
 			{
 				if (buildAssetDic.ContainsKey(collectAssetInfo.AssetPath) == false)
 				{
-					var buildAssetInfo = new BuildAssetInfo(collectAssetInfo.CollectorType, collectAssetInfo.BundleName,
+					var buildAssetInfo = new BuildAssetInfo(collectAssetInfo.CollectorType, collectAssetInfo.PackageName, collectAssetInfo.IncludeInBuild,
+						collectAssetInfo.BundleName,
 						collectAssetInfo.Address, collectAssetInfo.AssetPath, collectAssetInfo.IsRawAsset);
 					buildAssetInfo.AddAssetTags(collectAssetInfo.AssetTags);
 					buildAssetInfo.AddBundleTags(collectAssetInfo.AssetTags);
@@ -66,7 +67,7 @@ namespace YooAsset.Editor
 					}
 					else
 					{
-						var buildAssetInfo = new BuildAssetInfo(dependAssetPath);
+						var buildAssetInfo = new BuildAssetInfo(dependAssetPath, collectAssetInfo.PackageName, collectAssetInfo.IncludeInBuild);
 						buildAssetInfo.AddBundleTags(collectAssetInfo.AssetTags);
 						buildAssetInfo.AddReferenceBundleName(collectAssetInfo.BundleName);
 						buildAssetDic.Add(dependAssetPath, buildAssetInfo);
@@ -86,7 +87,16 @@ namespace YooAsset.Editor
 				foreach (var dependAssetPath in collectAssetInfo.DependAssets)
 				{
 					if (buildAssetDic.TryGetValue(dependAssetPath, out BuildAssetInfo value))
-						dependAssetInfos.Add(value);
+                    {
+						if (value.Package != collectAssetInfo.PackageName)
+						{
+							dependAssetInfos.Add(new BuildAssetInfo(value));
+						}
+						else
+						{
+							dependAssetInfos.Add(value);
+						}
+					}
 					else
 						throw new Exception("Should never get here !");
 				}

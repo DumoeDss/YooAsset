@@ -38,7 +38,8 @@ namespace YooAsset
 				buffer.WriteInt32(patchManifest.OutputNameStyle);
 				buffer.WriteUTF8(patchManifest.PackageName);
 				buffer.WriteUTF8(patchManifest.PackageVersion);
-
+				buffer.WriteUTF8Array(patchManifest.BundleNameList);
+				buffer.WriteUTF8Array(patchManifest.DependBundleNameList);
 				// 写入资源列表
 				buffer.WriteInt32(patchManifest.AssetList.Count);
 				for (int i = 0; i < patchManifest.AssetList.Count; i++)
@@ -47,8 +48,9 @@ namespace YooAsset
 					buffer.WriteUTF8(patchAsset.Address);
 					buffer.WriteUTF8(patchAsset.AssetPath);
 					buffer.WriteUTF8Array(patchAsset.AssetTags);
-					buffer.WriteUTF8(patchAsset.BundleID);
-					buffer.WriteUTF8Array(patchAsset.DependIDs);
+					buffer.WriteInt32(patchAsset.BundleID);
+					buffer.WriteInt32Array(patchAsset.DependIDs);
+				
 				}
 
 				// 写入资源包列表
@@ -97,7 +99,8 @@ namespace YooAsset
 				manifest.OutputNameStyle = buffer.ReadInt32();
 				manifest.PackageName = buffer.ReadUTF8();
 				manifest.PackageVersion = buffer.ReadUTF8();
-
+				manifest.BundleNameList = buffer.ReadUTF8Array();
+				manifest.DependBundleNameList = buffer.ReadUTF8Array();
 				// 读取资源列表
 				int patchAssetCount = buffer.ReadInt32();
 				manifest.AssetList = new List<PatchAsset>(patchAssetCount);
@@ -107,8 +110,8 @@ namespace YooAsset
 					patchAsset.Address = buffer.ReadUTF8();
 					patchAsset.AssetPath = buffer.ReadUTF8();
 					patchAsset.AssetTags = buffer.ReadUTF8Array();
-					patchAsset.BundleID = buffer.ReadUTF8();
-					patchAsset.DependIDs = buffer.ReadUTF8Array();
+					patchAsset.BundleID = buffer.ReadInt32();
+					patchAsset.DependIDs = buffer.ReadInt32Array();
 					manifest.AssetList.Add(patchAsset);
 				}
 

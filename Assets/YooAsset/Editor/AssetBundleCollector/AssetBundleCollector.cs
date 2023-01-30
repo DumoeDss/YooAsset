@@ -142,7 +142,7 @@ namespace YooAsset.Editor
 		/// <summary>
 		/// 获取打包收集的资源文件
 		/// </summary>
-		public List<CollectAssetInfo> GetAllCollectAssets(CollectCommand command, AssetBundleCollectorGroup group)
+		public List<CollectAssetInfo> GetAllCollectAssets(CollectCommand command, AssetBundleCollectorPackage package, AssetBundleCollectorGroup group)
 		{
 			// 注意：模拟构建模式下只收集主资源
 			if (command.BuildMode == EBuildMode.SimulateBuild)
@@ -186,7 +186,7 @@ namespace YooAsset.Editor
 
 						if (result.ContainsKey(assetPath) == false)
 						{
-							var collectAssetInfo = CreateCollectAssetInfo(command, group, assetPath, isRawAsset);
+							var collectAssetInfo = CreateCollectAssetInfo(command, package, group, assetPath, isRawAsset);
 							result.Add(assetPath, collectAssetInfo);
 						}
 						else
@@ -201,7 +201,7 @@ namespace YooAsset.Editor
 				string assetPath = CollectPath;
 				if (IsValidateAsset(assetPath) && IsCollectAsset(assetPath))
 				{
-					var collectAssetInfo = CreateCollectAssetInfo(command, group, assetPath, isRawAsset);
+					var collectAssetInfo = CreateCollectAssetInfo(command, package, group, assetPath, isRawAsset);
 					result.Add(assetPath, collectAssetInfo);
 				}
 				else
@@ -231,12 +231,12 @@ namespace YooAsset.Editor
 			return result.Values.ToList();
 		}
 
-		private CollectAssetInfo CreateCollectAssetInfo(CollectCommand command, AssetBundleCollectorGroup group, string assetPath, bool isRawAsset)
+		private CollectAssetInfo CreateCollectAssetInfo(CollectCommand command, AssetBundleCollectorPackage package, AssetBundleCollectorGroup group, string assetPath, bool isRawAsset)
 		{
 			string address = GetAddress(group, assetPath);
 			string bundleName = GetBundleName(group, assetPath);
 			List<string> assetTags = GetAssetTags(group);
-			CollectAssetInfo collectAssetInfo = new CollectAssetInfo(CollectorType, bundleName, address, assetPath, assetTags, isRawAsset);
+			CollectAssetInfo collectAssetInfo = new CollectAssetInfo(CollectorType, package.PackageName, package.IncludeInBuild, bundleName, address, assetPath, assetTags, isRawAsset);
 
 			// 注意：模拟构建模式下不需要收集依赖资源
 			if (command.BuildMode == EBuildMode.SimulateBuild)

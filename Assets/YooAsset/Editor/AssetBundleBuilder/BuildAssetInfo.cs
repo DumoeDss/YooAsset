@@ -60,11 +60,32 @@ namespace YooAsset.Editor
 
 		public bool IncludeInBuild { private set; get; }
 
-		public BuildAssetInfo(ECollectorType collectorType, string mainBundleName, string address, string assetPath, bool isRawAsset)
+		public BuildAssetInfo(BuildAssetInfo clone)
+		{
+			Package = clone.Package;
+			_mainBundleName = $"{Package}@{clone._mainBundleName}";
+			_shareBundleName = $"{Package}@{clone._shareBundleName}";
+			CollectorType = clone.CollectorType;
+			Address = clone.Address;
+			IncludeInBuild = clone.IncludeInBuild;
+			AssetPath = clone.AssetPath;
+			IsRawAsset = clone.IsRawAsset;
+			IsShaderAsset = clone.IsShaderAsset;
+			if (clone.AllDependAssetInfos != null)
+				AllDependAssetInfos = new List<BuildAssetInfo>(clone.AllDependAssetInfos);
+			AssetTags = new List<string>(clone.AssetTags);
+			BundleTags = new List<string>(clone.BundleTags);
+			_referenceBundleNames = new HashSet<string>(clone._referenceBundleNames);
+		}
+
+
+		public BuildAssetInfo(ECollectorType collectorType, string package, bool includeInBuild, string mainBundleName, string address, string assetPath, bool isRawAsset)
 		{
 			_mainBundleName = mainBundleName;
 			CollectorType = collectorType;
 			Address = address;
+			Package = package;
+			IncludeInBuild = includeInBuild;
 			AssetPath = assetPath;
 			IsRawAsset = isRawAsset;
 
@@ -74,10 +95,12 @@ namespace YooAsset.Editor
 			else
 				IsShaderAsset = false;
 		}
-		public BuildAssetInfo(string assetPath)
+		public BuildAssetInfo(string assetPath, string package, bool includeInBuild)
 		{
 			CollectorType = ECollectorType.None;
 			Address = string.Empty;
+			Package = package;
+			IncludeInBuild = includeInBuild;
 			AssetPath = assetPath;
 			IsRawAsset = false;
 

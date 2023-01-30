@@ -24,12 +24,12 @@ namespace YooAsset
 		/// <summary>
 		/// 所属资源包ID
 		/// </summary>
-		public string BundleID;
+		public int BundleID;
 
 		/// <summary>
 		/// 依赖的资源包ID列表
 		/// </summary>
-		public string[] DependIDs;
+		public int[] DependIDs;
 
 
 		/// <summary>

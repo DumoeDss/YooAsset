@@ -69,7 +69,7 @@ namespace YooAsset.Editor
 		/// <summary>
 		/// 获取打包收集的资源文件
 		/// </summary>
-		public List<CollectAssetInfo> GetAllCollectAssets(CollectCommand command)
+		public List<CollectAssetInfo> GetAllCollectAssets(CollectCommand command, AssetBundleCollectorPackage package)
 		{
 			Dictionary<string, CollectAssetInfo> result = new Dictionary<string, CollectAssetInfo>(10000);
 
@@ -83,7 +83,7 @@ namespace YooAsset.Editor
 			// 收集打包资源
 			foreach (var collector in Collectors)
 			{
-				var temper = collector.GetAllCollectAssets(command, this);
+				var temper = collector.GetAllCollectAssets(command, package, this);
 				foreach (var assetInfo in temper)
 				{
 					if (result.ContainsKey(assetInfo.AssetPath) == false)

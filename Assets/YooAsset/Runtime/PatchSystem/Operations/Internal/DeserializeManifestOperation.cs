@@ -80,7 +80,8 @@ namespace YooAsset
 					Manifest.OutputNameStyle = _buffer.ReadInt32();
 					Manifest.PackageName = _buffer.ReadUTF8();
 					Manifest.PackageVersion = _buffer.ReadUTF8();
-
+					Manifest.BundleNameList = _buffer.ReadUTF8Array();
+					Manifest.DependBundleNameList = _buffer.ReadUTF8Array();
 					_steps = ESteps.PrepareAssetList;
 				}
 
@@ -100,8 +101,8 @@ namespace YooAsset
 						patchAsset.Address = _buffer.ReadUTF8();
 						patchAsset.AssetPath = _buffer.ReadUTF8();
 						patchAsset.AssetTags = _buffer.ReadUTF8Array();
-						patchAsset.BundleID = _buffer.ReadUTF8();
-						patchAsset.DependIDs = _buffer.ReadUTF8Array();
+						patchAsset.BundleID = _buffer.ReadInt32();
+						patchAsset.DependIDs = _buffer.ReadInt32Array();
 						Manifest.AssetList.Add(patchAsset);
 
 						// 注意：我们不允许原始路径存在重名

@@ -21,6 +21,12 @@ namespace YooAsset.Editor
 		public string PackageDesc = string.Empty;
 
 		/// <summary>
+		/// 是否打包
+		/// 无论是否打包都会生成Manifest文件
+		/// </summary>
+		public bool IncludeInBuild;
+
+		/// <summary>
 		/// 分组列表
 		/// </summary>
 		public List<AssetBundleCollectorGroup> Groups = new List<AssetBundleCollectorGroup>();
@@ -63,7 +69,7 @@ namespace YooAsset.Editor
 			// 收集打包资源
 			foreach (var group in Groups)
 			{
-				var temper = group.GetAllCollectAssets(command);
+				var temper = group.GetAllCollectAssets(command, this);
 				foreach (var assetInfo in temper)
 				{
 					if (result.ContainsKey(assetInfo.AssetPath) == false)
