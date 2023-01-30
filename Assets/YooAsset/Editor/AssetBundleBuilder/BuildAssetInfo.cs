@@ -38,6 +38,11 @@ namespace YooAsset.Editor
 		public bool IsShaderAsset { private set; get; }
 
 		/// <summary>
+		/// 是否为动态库资源
+		/// </summary>
+		public bool IsAssemblyAsset { private set; get; }
+
+		/// <summary>
 		/// 资源的分类标签
 		/// </summary>
 		public readonly List<string> AssetTags = new List<string>();
@@ -54,13 +59,14 @@ namespace YooAsset.Editor
 		public List<BuildAssetInfo> AllDependAssetInfos { private set; get; }
 
 
-		public BuildAssetInfo(ECollectorType collectorType, string mainBundleName, string address, string assetPath, bool isRawAsset)
+		public BuildAssetInfo(ECollectorType collectorType, string mainBundleName, string address, string assetPath, bool isRawAsset, bool isAssemblyAsset)
 		{
 			_mainBundleName = mainBundleName;
 			CollectorType = collectorType;
 			Address = address;
 			AssetPath = assetPath;
 			IsRawAsset = isRawAsset;
+			IsAssemblyAsset = isAssemblyAsset;
 
 			System.Type assetType = UnityEditor.AssetDatabase.GetMainAssetTypeAtPath(assetPath);
 			if (assetType == typeof(UnityEngine.Shader) || assetType == typeof(UnityEngine.ShaderVariantCollection))
@@ -74,6 +80,7 @@ namespace YooAsset.Editor
 			Address = string.Empty;
 			AssetPath = assetPath;
 			IsRawAsset = false;
+			IsAssemblyAsset = false;
 
 			System.Type assetType = UnityEditor.AssetDatabase.GetMainAssetTypeAtPath(assetPath);
 			if (assetType == typeof(UnityEngine.Shader) || assetType == typeof(UnityEngine.ShaderVariantCollection))

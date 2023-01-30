@@ -632,6 +632,14 @@ namespace YooAsset.Editor
 				elementTop.Add(IsMultiPlatform);
 			}
 			{
+				var isAssembly = new Toggle();
+				isAssembly.name = "IsAssembly";
+				isAssembly.text = "Assembly";
+				isAssembly.style.unityTextAlign = TextAnchor.MiddleCenter;
+				isAssembly.style.flexGrow = 0f;
+				elementTop.Add(isAssembly);
+			}
+			{
 				var textField = new TextField();
 				textField.name = "TextField1";
 				textField.label = "Tags";
@@ -785,6 +793,14 @@ namespace YooAsset.Editor
 			IsMultiPlatform.RegisterValueChangedCallback(evt =>
 			{
 				collector.IsMultiPlatform = evt.newValue;
+				AssetBundleCollectorSettingData.ModifyCollector(selectGroup, collector);
+			});
+
+			var isAssemblyAsset = element.Q<Toggle>("IsAssembly");
+			isAssemblyAsset.SetValueWithoutNotify(collector.IsAssembly);
+			isAssemblyAsset.RegisterValueChangedCallback(evt =>
+			{
+				collector.IsAssembly = evt.newValue;
 				AssetBundleCollectorSettingData.ModifyCollector(selectGroup, collector);
 			});
 

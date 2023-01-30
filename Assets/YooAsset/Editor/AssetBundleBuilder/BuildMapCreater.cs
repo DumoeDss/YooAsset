@@ -43,7 +43,7 @@ namespace YooAsset.Editor
 				if (buildAssetDic.ContainsKey(collectAssetInfo.AssetPath) == false)
 				{
 					var buildAssetInfo = new BuildAssetInfo(collectAssetInfo.CollectorType, collectAssetInfo.BundleName,
-						collectAssetInfo.Address, collectAssetInfo.AssetPath, collectAssetInfo.IsRawAsset);
+						collectAssetInfo.Address, collectAssetInfo.AssetPath, collectAssetInfo.IsRawAsset, collectAssetInfo.IsAssemblyAsset);
 					buildAssetInfo.AddAssetTags(collectAssetInfo.AssetTags);
 					buildAssetInfo.AddBundleTags(collectAssetInfo.AssetTags);
 					buildAssetDic.Add(collectAssetInfo.AssetPath, buildAssetInfo);

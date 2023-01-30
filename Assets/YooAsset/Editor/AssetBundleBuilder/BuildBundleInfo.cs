@@ -99,6 +99,38 @@ namespace YooAsset.Editor
 			}
 		}
 
+		/// <summary>
+		/// 是否为动态库文件
+		/// </summary>
+		public bool IsAssemblyAsset
+		{
+			get
+			{
+				foreach (var asset in BuildinAssets)
+				{
+					if (asset.IsAssemblyAsset)
+						return true;
+				}
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// 拼接所有动态库的Address
+		/// </summary>
+		public string AssemblyAddresses
+		{
+			get
+			{
+				string assembly = string.Empty;
+				foreach (var asset in BuildinAssets)
+				{
+					if (asset.IsAssemblyAsset)
+						assembly += asset.Address + ";";
+				}
+				return assembly;
+			}
+		}
 
 		public BuildBundleInfo(string bundleName)
 		{
