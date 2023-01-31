@@ -692,8 +692,8 @@ namespace YooAsset.Editor
 
 			var collector = selectGroup.Collectors[index];
 			var collectObject = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(collector.CollectPath);
-			if (collectObject != null)
-				collectObject.name = collector.CollectPath;
+			//if (collectObject != null)
+			//	collectObject.name = collector.CollectPath;
 
 			// Foldout
 			var foldout = element.Q<Foldout>("Foldout1");
@@ -728,7 +728,7 @@ namespace YooAsset.Editor
 			{
 				collector.CollectPath = AssetDatabase.GetAssetPath(evt.newValue);
 				collector.CollectorGUID = AssetDatabase.AssetPathToGUID(collector.CollectPath);
-				objectField1.value.name = collector.CollectPath;
+				//objectField1.value.name = collector.CollectPath;
 				AssetBundleCollectorSettingData.ModifyCollector(selectGroup, collector);
 				if (foldout.value)
 				{
