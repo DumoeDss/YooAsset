@@ -45,7 +45,6 @@ namespace YooAsset.Editor
 		/// </summary>
 		public string AssetTags = string.Empty;
 
-
 		/// <summary>
 		/// 可寻址路径
 		/// </summary>
@@ -55,6 +54,11 @@ namespace YooAsset.Editor
 		/// 跨平台
 		/// </summary>
 		public bool IsMultiPlatform = false;
+
+		/// <summary>
+		/// 动态库
+		/// </summary>
+		public bool IsAssembly = false;
 
 		/// <summary>
 		/// 收集器是否有效
@@ -186,7 +190,7 @@ namespace YooAsset.Editor
 
 						if (result.ContainsKey(assetPath) == false)
 						{
-							var collectAssetInfo = CreateCollectAssetInfo(command, package, group, assetPath, isRawAsset);
+							var collectAssetInfo = CreateCollectAssetInfo(command, package, group, assetPath, isRawAsset, IsAssembly);
 							result.Add(assetPath, collectAssetInfo);
 						}
 						else
@@ -201,7 +205,7 @@ namespace YooAsset.Editor
 				string assetPath = CollectPath;
 				if (IsValidateAsset(assetPath) && IsCollectAsset(assetPath))
 				{
-					var collectAssetInfo = CreateCollectAssetInfo(command, package, group, assetPath, isRawAsset);
+					var collectAssetInfo = CreateCollectAssetInfo(command, package, group, assetPath, isRawAsset, IsAssembly);
 					result.Add(assetPath, collectAssetInfo);
 				}
 				else
@@ -231,12 +235,12 @@ namespace YooAsset.Editor
 			return result.Values.ToList();
 		}
 
-		private CollectAssetInfo CreateCollectAssetInfo(CollectCommand command, AssetBundleCollectorPackage package, AssetBundleCollectorGroup group, string assetPath, bool isRawAsset)
+		private CollectAssetInfo CreateCollectAssetInfo(CollectCommand command, AssetBundleCollectorPackage package, AssetBundleCollectorGroup group, string assetPath, bool isRawAsset, bool isAssembly)
 		{
 			string address = GetAddress(group, assetPath);
 			string bundleName = GetBundleName(group, assetPath);
 			List<string> assetTags = GetAssetTags(group);
-			CollectAssetInfo collectAssetInfo = new CollectAssetInfo(CollectorType, package.PackageName, package.IncludeInBuild, bundleName, address, assetPath, assetTags, isRawAsset);
+			CollectAssetInfo collectAssetInfo = new CollectAssetInfo(CollectorType, package.PackageName, package.IncludeInBuild, bundleName, address, assetPath, assetTags, isRawAsset, isAssembly);
 
 			// 注意：模拟构建模式下不需要收集依赖资源
 			if (command.BuildMode == EBuildMode.SimulateBuild)
