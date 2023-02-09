@@ -16,14 +16,14 @@ namespace YooAsset.Editor
 			buildParameters.OutputRoot = defaultOutputRoot;
 			buildParameters.BuildTarget = EditorUserBuildSettings.activeBuildTarget;
 			buildParameters.BuildMode = EBuildMode.SimulateBuild;
-			buildParameters.PackageName = packageName;
+			buildParameters.PackageNames = new System.Collections.Generic.List<string>() { packageName };
 			buildParameters.PackageVersion = "Simulate";
 
 			AssetBundleBuilder builder = new AssetBundleBuilder();
 			var buildResult = builder.Run(buildParameters);
 			if (buildResult.Success)
 			{
-				string manifestFileName = YooAssetSettingsData.GetManifestBinaryFileName(buildParameters.PackageName, buildParameters.PackageVersion);
+				string manifestFileName = YooAssetSettingsData.GetManifestBinaryFileName(packageName, buildParameters.PackageVersion);
 				string manifestFilePath = $"{buildResult.OutputPackageDirectory}/{manifestFileName}";
 				return manifestFilePath;
 			}

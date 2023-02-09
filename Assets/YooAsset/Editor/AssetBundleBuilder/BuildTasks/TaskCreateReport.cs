@@ -46,7 +46,7 @@ namespace YooAsset.Editor
 				buildReport.Summary.BuildTarget = buildParameters.BuildTarget;
 				buildReport.Summary.BuildPipeline = buildParameters.BuildPipeline;
 				buildReport.Summary.BuildMode = buildParameters.BuildMode;
-				buildReport.Summary.BuildPackageName = buildParameters.PackageName;
+				buildReport.Summary.BuildPackageName = buildParameters.PackageNames;
 				buildReport.Summary.BuildPackageVersion = buildParameters.PackageVersion;
 				buildReport.Summary.EnableAddressable = buildMapContext.EnableAddressable;
 				buildReport.Summary.UniqueBundleName = buildMapContext.UniqueBundleName;
@@ -104,7 +104,7 @@ namespace YooAsset.Editor
 			}
 
 			// 序列化文件
-			string fileName = YooAssetSettingsData.GetReportFileName(buildParameters.PackageName, buildParameters.PackageVersion);
+			string fileName = YooAssetSettingsData.GetReportFileName(buildParameters.PackageNames, buildParameters.PackageVersion);
 			string filePath = $"{packageOutputDirectory}/{fileName}";
 			BuildReport.Serialize(filePath, buildReport);
 			BuildRunner.Log($"资源构建报告文件创建完成：{filePath}");

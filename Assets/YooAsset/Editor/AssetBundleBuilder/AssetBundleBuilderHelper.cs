@@ -64,7 +64,7 @@ namespace YooAsset.Editor
 		/// </summary>
 		public static string MakePipelineOutputDirectory(string outputRoot, string buildPackage, BuildTarget buildTarget, EBuildMode buildMode)
 		{
-			string outputDirectory = $"{outputRoot}/{buildPackage}/{buildTarget}/{YooAssetSettings.OutputFolderName}";
+			string outputDirectory = $"{outputRoot}/{buildTarget}/{buildPackage}/{YooAssetSettings.OutputFolderName}";
 			return outputDirectory;
 		}
 	}

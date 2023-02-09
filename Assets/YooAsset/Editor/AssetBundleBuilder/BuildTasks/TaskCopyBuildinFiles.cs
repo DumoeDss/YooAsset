@@ -31,7 +31,7 @@ namespace YooAsset.Editor
 			ECopyBuildinFileOption option = buildParametersContext.Parameters.CopyBuildinFileOption;
 			string packageOutputDirectory = buildParametersContext.GetPackageOutputDirectory();
 			string streamingAssetsDirectory = AssetBundleBuilderHelper.GetStreamingAssetsFolderPath();
-			string buildPackageName = buildParametersContext.Parameters.PackageName;
+			string buildPackageName = buildParametersContext.Parameters.PackageNames;
 			string buildPackageVersion = buildParametersContext.Parameters.PackageVersion;
 
 			// 加载补丁清单

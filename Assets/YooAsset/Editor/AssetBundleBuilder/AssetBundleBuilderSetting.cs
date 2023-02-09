@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace YooAsset.Editor
@@ -18,7 +19,7 @@ namespace YooAsset.Editor
 		/// <summary>
 		/// 构建的包裹名称
 		/// </summary>
-		public string BuildPackage = string.Empty;
+		public List<string> BuildPackage = new List<string>();
 
 		/// <summary>
 		/// 压缩方式

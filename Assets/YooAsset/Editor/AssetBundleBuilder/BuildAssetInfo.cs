@@ -56,15 +56,15 @@ namespace YooAsset.Editor
 		/// <summary>
 		/// 包名
 		/// </summary>
-		public string Package { private set; get; }
+		public string PackageName { private set; get; }
 
 		public bool IncludeInBuild { private set; get; }
 
 		public BuildAssetInfo(BuildAssetInfo clone)
 		{
-			Package = clone.Package;
-			_mainBundleName = $"{Package}@{clone._mainBundleName}";
-			_shareBundleName = $"{Package}@{clone._shareBundleName}";
+			PackageName = clone.PackageName;
+			_mainBundleName = $"{PackageName}@{clone._mainBundleName}";
+			_shareBundleName = $"{PackageName}@{clone._shareBundleName}";
 			CollectorType = clone.CollectorType;
 			Address = clone.Address;
 			IncludeInBuild = clone.IncludeInBuild;
@@ -79,12 +79,12 @@ namespace YooAsset.Editor
 		}
 
 
-		public BuildAssetInfo(ECollectorType collectorType, string package, bool includeInBuild, string mainBundleName, string address, string assetPath, bool isRawAsset)
+		public BuildAssetInfo(ECollectorType collectorType, string packageName, bool includeInBuild, string mainBundleName, string address, string assetPath, bool isRawAsset)
 		{
 			_mainBundleName = mainBundleName;
 			CollectorType = collectorType;
 			Address = address;
-			Package = package;
+			PackageName = packageName;
 			IncludeInBuild = includeInBuild;
 			AssetPath = assetPath;
 			IsRawAsset = isRawAsset;
@@ -95,11 +95,11 @@ namespace YooAsset.Editor
 			else
 				IsShaderAsset = false;
 		}
-		public BuildAssetInfo(string assetPath, string package, bool includeInBuild)
+		public BuildAssetInfo(string assetPath, string packageName, bool includeInBuild)
 		{
 			CollectorType = ECollectorType.None;
 			Address = string.Empty;
-			Package = package;
+			PackageName = packageName;
 			IncludeInBuild = includeInBuild;
 			AssetPath = assetPath;
 			IsRawAsset = false;
@@ -195,7 +195,7 @@ namespace YooAsset.Editor
 		/// <summary>
 		/// 计算主资源或共享资源的完整包名
 		/// </summary>
-		public void CalculateFullBundleName(bool uniqueBundleName, string packageName)
+		public void CalculateFullBundleName(bool uniqueBundleName)
 		{
 			if (CollectorType == ECollectorType.None)
 			{
@@ -204,11 +204,11 @@ namespace YooAsset.Editor
 
 				if (IsShaderAsset)
 				{
-					_shareBundleName = YooAssetSettingsData.GetUnityShadersBundleFullName(uniqueBundleName, packageName);
+					_shareBundleName = YooAssetSettingsData.GetUnityShadersBundleFullName(uniqueBundleName, PackageName);
 				}
 				else
 				{
-					if (_referenceBundleNames.Count > 1)
+					if (_referenceBundleNames.Count > 0)
 					{
 						IPackRule packRule = PackDirectory.StaticPackRule;
 						var bundleName = packRule.GetBundleName(new PackRuleData(AssetPath));
@@ -216,11 +216,15 @@ namespace YooAsset.Editor
 							bundleName = EditorTools.GetRegularPath(bundleName).Replace('/', '_').Replace('.', '_').ToLower();
 						else
 							bundleName = EditorTools.GetRegularPath(bundleName).ToLower();
-
+						string prefix = "share";
+						if (_referenceBundleNames.Count == 1)
+                        {
+							prefix = "auto_dependencies";
+                        }
 						if (uniqueBundleName)
-							_shareBundleName = $"{packageName.ToLower()}_share_{bundleName}.{YooAssetSettingsData.Setting.AssetBundleFileVariant}";
+							_shareBundleName = $"{PackageName.ToLower()}_{prefix}_{bundleName}.{YooAssetSettingsData.Setting.AssetBundleFileVariant}";
 						else
-							_shareBundleName = $"share_{bundleName}.{YooAssetSettingsData.Setting.AssetBundleFileVariant}";
+							_shareBundleName = $"{prefix}_{bundleName}.{YooAssetSettingsData.Setting.AssetBundleFileVariant}";
 					}
 				}
 			}
@@ -239,7 +243,7 @@ namespace YooAsset.Editor
 
 				if (uniqueBundleName)
 				{
-					_mainBundleName = $"{packageName.ToLower()}_{_mainBundleName}";
+					_mainBundleName = $"{PackageName.ToLower()}_{_mainBundleName}";
 				}
 			}
 		}

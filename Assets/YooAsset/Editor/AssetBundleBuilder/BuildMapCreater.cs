@@ -10,7 +10,7 @@ namespace YooAsset.Editor
 		/// <summary>
 		/// 执行资源构建上下文
 		/// </summary>
-		public static BuildMapContext CreateBuildMap(EBuildMode buildMode, string packageName)
+		public static BuildMapContext CreateBuildMap(EBuildMode buildMode, List<string> packageNames)
 		{
 			BuildMapContext context = new BuildMapContext();
 			Dictionary<string, BuildAssetInfo> buildAssetDic = new Dictionary<string, BuildAssetInfo>(1000);
@@ -19,8 +19,12 @@ namespace YooAsset.Editor
 			AssetBundleCollectorSettingData.Setting.CheckConfigError();
 
 			// 2. 获取所有收集器收集的资源
-			var buildResult = AssetBundleCollectorSettingData.Setting.GetPackageAssets(buildMode, packageName);
-			List<CollectAssetInfo> allCollectAssets = buildResult.CollectAssets;
+			var buildResult = AssetBundleCollectorSettingData.Setting.GetPackageAssets(buildMode, packageNames);
+			List<CollectAssetInfo> allCollectAssets = new List<CollectAssetInfo>();
+			foreach (var item in buildResult)
+            {
+				allCollectAssets.AddRange(item.CollectAssets);
+			}
 
 			// 3. 剔除未被引用的依赖资源
 			List<CollectAssetInfo> removeDependList = new List<CollectAssetInfo>();
@@ -77,8 +81,8 @@ namespace YooAsset.Editor
 
 			// 6. 记录关键信息
 			context.AssetFileCount = buildAssetDic.Count;
-			context.EnableAddressable = buildResult.EnableAddressable;
-			context.UniqueBundleName = buildResult.UniqueBundleName;
+			context.EnableAddressable = AssetBundleCollectorSettingData.Setting.EnableAddressable;
+			context.UniqueBundleName = AssetBundleCollectorSettingData.Setting.UniqueBundleName;
 
 			// 7. 填充主动收集资源的依赖列表
 			foreach (var collectAssetInfo in allCollectAssets)
@@ -88,7 +92,7 @@ namespace YooAsset.Editor
 				{
 					if (buildAssetDic.TryGetValue(dependAssetPath, out BuildAssetInfo value))
                     {
-						if (value.Package != collectAssetInfo.PackageName)
+						if (value.PackageName != collectAssetInfo.PackageName)
 						{
 							dependAssetInfos.Add(new BuildAssetInfo(value));
 						}
@@ -106,7 +110,7 @@ namespace YooAsset.Editor
 			// 8. 计算完整的资源包名
 			foreach (KeyValuePair<string, BuildAssetInfo> pair in buildAssetDic)
 			{
-				pair.Value.CalculateFullBundleName(buildResult.UniqueBundleName, buildResult.PackageName);
+				pair.Value.CalculateFullBundleName(AssetBundleCollectorSettingData.Setting.UniqueBundleName);
 			}
 
 			// 9. 移除不参与构建的资源

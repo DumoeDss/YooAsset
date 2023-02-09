@@ -59,7 +59,7 @@ namespace YooAsset.Editor
 		/// <summary>
 		/// 构建的包裹名称
 		/// </summary>
-		public string PackageName;
+		public List<string> PackageNames;
 
 		/// <summary>
 		/// 构建的包裹版本

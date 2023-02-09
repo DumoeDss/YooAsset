@@ -45,7 +45,7 @@ namespace YooAsset.Editor
 			}
 			else
 			{
-				BuildBundleInfo newBundleInfo = new BuildBundleInfo(bundleName, assetInfo.Package, assetInfo.IncludeInBuild);
+				BuildBundleInfo newBundleInfo = new BuildBundleInfo(bundleName, assetInfo.PackageName, assetInfo.IncludeInBuild);
 				newBundleInfo.PackAsset(assetInfo);
 				BundleInfos.Add(newBundleInfo);
 			}

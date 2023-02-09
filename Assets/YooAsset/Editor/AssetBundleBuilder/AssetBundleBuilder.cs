@@ -11,6 +11,66 @@ namespace YooAsset.Editor
 		private readonly BuildContext _buildContext = new BuildContext();
 
 		/// <summary>
+		/// 查看依赖
+		/// </summary>
+		/// <param name="buildParameters"></param>
+		/// <returns></returns>
+		public BuildResult CalcDependency(BuildParameters buildParameters)
+		{
+			// 清空旧数据
+			_buildContext.ClearAllContext();
+
+			// 检测构建参数是否为空
+			if (buildParameters == null)
+				throw new Exception($"{nameof(buildParameters)} is null !");
+
+			// 检测可编程构建管线参数
+			if (buildParameters.BuildPipeline == EBuildPipeline.ScriptableBuildPipeline)
+			{
+				if (buildParameters.SBPParameters == null)
+					throw new Exception($"{nameof(BuildParameters.SBPParameters)} is null !");
+
+				if (buildParameters.BuildMode == EBuildMode.DryRunBuild)
+					throw new Exception($"{nameof(EBuildPipeline.ScriptableBuildPipeline)} not support {nameof(EBuildMode.DryRunBuild)} build mode !");
+
+				if (buildParameters.BuildMode == EBuildMode.ForceRebuild)
+					throw new Exception($"{nameof(EBuildPipeline.ScriptableBuildPipeline)} not support {nameof(EBuildMode.ForceRebuild)} build mode !");
+			}
+
+			// 构建参数
+			var buildParametersContext = new BuildParametersContext(buildParameters);
+			_buildContext.SetContextObject(buildParametersContext);
+
+			// 是否显示LOG
+			if (buildParameters.BuildMode == EBuildMode.SimulateBuild)
+				BuildRunner.EnableLog = false;
+			else
+				BuildRunner.EnableLog = true;
+
+			// 创建构建节点
+			List<IBuildTask> pipeline  = new List<IBuildTask>
+				{
+					new TaskPrepare(), //前期准备工作
+					new TaskGetBuildMap(), //获取构建列表
+				};
+
+			// 执行构建流程
+			var buildResult = BuildRunner.Run(pipeline, _buildContext);
+			if (buildResult.Success)
+			{
+				buildResult.OutputPackageDirectory = buildParametersContext.GetPackageOutputDirectory();
+				Debug.Log($"{buildParameters.BuildMode} pipeline build succeed !");
+			}
+			else
+			{
+				Debug.LogWarning($"{buildParameters.BuildMode} pipeline build failed !");
+				Debug.LogError($"Build task failed : {buildResult.FailedTask}");
+				Debug.LogError($"Build task error : {buildResult.FailedInfo}");
+			}
+			return buildResult;
+		}
+
+		/// <summary>
 		/// 开始构建
 		/// </summary>
 		public BuildResult Run(BuildParameters buildParameters)

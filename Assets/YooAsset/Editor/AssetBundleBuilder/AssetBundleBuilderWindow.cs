@@ -56,7 +56,7 @@ namespace YooAsset.Editor
 				_buildTarget = EditorUserBuildSettings.activeBuildTarget;
 
 				// 包裹名称列表
-				_buildPackageNames = GetBuildPackageNames();
+				AssetBundleBuilderSettingData.Setting.BuildPackage = _buildPackageNames = GetBuildPackageNames();
 
 				// 加密服务类
 				_encryptionServicesClassTypes = GetEncryptionServicesClassTypes();
@@ -96,28 +96,28 @@ namespace YooAsset.Editor
 				_buildVersionField = root.Q<TextField>("BuildVersion");
 				_buildVersionField.SetValueWithoutNotify(GetBuildPackageVersion());
 
-				// 构建包裹
-				var buildPackageContainer = root.Q("BuildPackageContainer");
-				if (_buildPackageNames.Count > 0)
-				{
-					int defaultIndex = GetDefaultPackageIndex(AssetBundleBuilderSettingData.Setting.BuildPackage);
-					_buildPackageField = new PopupField<string>(_buildPackageNames, defaultIndex);
-					_buildPackageField.label = "Build Package";
-					_buildPackageField.style.width = 350;
-					_buildPackageField.RegisterValueChangedCallback(evt =>
-					{
-						AssetBundleBuilderSettingData.IsDirty = true;
-						AssetBundleBuilderSettingData.Setting.BuildPackage = _buildPackageField.value;
-					});
-					buildPackageContainer.Add(_buildPackageField);
-				}
-				else
-				{
-					_buildPackageField = new PopupField<string>();
-					_buildPackageField.label = "Build Package";
-					_buildPackageField.style.width = 350;
-					buildPackageContainer.Add(_buildPackageField);
-				}
+				//// 构建包裹
+				//var buildPackageContainer = root.Q("BuildPackageContainer");
+				//if (_buildPackageNames.Count > 0)
+				//{
+				//	int defaultIndex = GetDefaultPackageIndex(AssetBundleBuilderSettingData.Setting.BuildPackage);
+				//	_buildPackageField = new PopupField<string>(_buildPackageNames, defaultIndex);
+				//	_buildPackageField.label = "Build Package";
+				//	_buildPackageField.style.width = 350;
+				//	_buildPackageField.RegisterValueChangedCallback(evt =>
+				//	{
+				//		AssetBundleBuilderSettingData.IsDirty = true;
+				//		AssetBundleBuilderSettingData.Setting.BuildPackage = _buildPackageField.value;
+				//	});
+				//	buildPackageContainer.Add(_buildPackageField);
+				//}
+				//else
+				//{
+				//	_buildPackageField = new PopupField<string>();
+				//	_buildPackageField.label = "Build Package";
+				//	_buildPackageField.style.width = 350;
+				//	buildPackageContainer.Add(_buildPackageField);
+				//}
 
 				// 加密方法
 				var encryptionContainer = root.Q("EncryptionContainer");
@@ -185,6 +185,10 @@ namespace YooAsset.Editor
 					AssetBundleBuilderSettingData.Setting.CopyBuildinFileTags = _copyBuildinFileTagsField.value;
 				});
 
+				// 查看依赖
+				var dependencyButton = root.Q<Button>("CalcDependencies");
+				dependencyButton.clicked += DependencyButton_clicked; ;
+
 				// 构建按钮
 				var buildButton = root.Q<Button>("Build");
 				buildButton.clicked += BuildButton_clicked; ;
@@ -235,6 +239,17 @@ namespace YooAsset.Editor
 		{
 			AssetBundleBuilderSettingData.SaveFile();
 		}
+
+		private void DependencyButton_clicked()
+		{
+			var buildMode = AssetBundleBuilderSettingData.Setting.BuildMode;
+			if (EditorUtility.DisplayDialog("提示", $"查看依赖！", "Yes", "No"))
+			{
+				EditorTools.ClearUnityConsole();
+				EditorApplication.delayCall += ExecuteDependency;
+			}
+		}
+
 		private void BuildButton_clicked()
 		{
 			var buildMode = AssetBundleBuilderSettingData.Setting.BuildMode;
@@ -250,6 +265,35 @@ namespace YooAsset.Editor
 		}
 
 		/// <summary>
+		/// 查看依赖
+		/// </summary>
+		private void ExecuteDependency()
+		{
+			string defaultOutputRoot = AssetBundleBuilderHelper.GetDefaultOutputRoot();
+			BuildParameters buildParameters = new BuildParameters();
+			buildParameters.OutputRoot = defaultOutputRoot;
+			buildParameters.BuildTarget = _buildTarget;
+			buildParameters.BuildPipeline = AssetBundleBuilderSettingData.Setting.BuildPipeline;
+			buildParameters.BuildMode = AssetBundleBuilderSettingData.Setting.BuildMode;
+			buildParameters.PackageNames = AssetBundleBuilderSettingData.Setting.BuildPackage;
+			buildParameters.PackageVersion = _buildVersionField.value;
+			buildParameters.VerifyBuildingResult = true;
+			buildParameters.EncryptionServices = CreateEncryptionServicesInstance();
+			buildParameters.CompressOption = AssetBundleBuilderSettingData.Setting.CompressOption;
+			buildParameters.OutputNameStyle = AssetBundleBuilderSettingData.Setting.OutputNameStyle;
+			buildParameters.CopyBuildinFileOption = AssetBundleBuilderSettingData.Setting.CopyBuildinFileOption;
+			buildParameters.CopyBuildinFileTags = AssetBundleBuilderSettingData.Setting.CopyBuildinFileTags;
+			if (AssetBundleBuilderSettingData.Setting.BuildPipeline == EBuildPipeline.ScriptableBuildPipeline)
+            {
+				buildParameters.SBPParameters = new BuildParameters.SBPBuildParameters();
+				buildParameters.SBPParameters.WriteLinkXML = true;
+			}
+
+			var builder = new AssetBundleBuilder();
+			builder.CalcDependency(buildParameters);
+		}
+
+		/// <summary>
 		/// 执行构建
 		/// </summary>
 		private void ExecuteBuild()
@@ -260,7 +304,7 @@ namespace YooAsset.Editor
 			buildParameters.BuildTarget = _buildTarget;
 			buildParameters.BuildPipeline = AssetBundleBuilderSettingData.Setting.BuildPipeline;
 			buildParameters.BuildMode = AssetBundleBuilderSettingData.Setting.BuildMode;
-			buildParameters.PackageName = AssetBundleBuilderSettingData.Setting.BuildPackage;
+			buildParameters.PackageNames = AssetBundleBuilderSettingData.Setting.BuildPackage;
 			buildParameters.PackageVersion = _buildVersionField.value;
 			buildParameters.VerifyBuildingResult = true;
 			buildParameters.EncryptionServices = CreateEncryptionServicesInstance();
@@ -302,7 +346,7 @@ namespace YooAsset.Editor
 			}
 
 			AssetBundleBuilderSettingData.IsDirty = true;
-			AssetBundleBuilderSettingData.Setting.BuildPackage = _buildPackageNames[0];
+			//AssetBundleBuilderSettingData.Setting.BuildPackage = _buildPackageNames[0];
 			return 0;
 		}
 		private List<string> GetBuildPackageNames()
@@ -310,7 +354,8 @@ namespace YooAsset.Editor
 			List<string> result = new List<string>();
 			foreach (var package in AssetBundleCollectorSettingData.Setting.Packages)
 			{
-				result.Add(package.PackageName);
+				if(package.IncludeInBuild)
+					result.Add(package.PackageName);
 			}
 			return result;
 		}

@@ -111,6 +111,28 @@ namespace YooAsset.Editor
 		}
 
 		/// <summary>
+		/// 获取包裹收集的资源文件
+		/// </summary>
+		public List<CollectResult> GetPackageAssets(EBuildMode buildMode, List<string> packageNames)
+		{
+			if (packageNames==null|| packageNames.Count==0)
+				throw new Exception("Build package name is null or mepty !");
+			List<CollectResult> collectResultList = new List<CollectResult>(1000);
+
+			foreach (var package in Packages)
+			{
+				if (packageNames.Contains(package.PackageName))
+				{
+					CollectCommand command = new CollectCommand(buildMode, EnableAddressable);
+					CollectResult collectResult = new CollectResult(package.PackageName, EnableAddressable, UniqueBundleName);
+					collectResult.SetCollectAssets(package.GetAllCollectAssets(command));
+					collectResultList.Add(collectResult);
+				}
+			}
+			return collectResultList;
+		}
+
+		/// <summary>
 		/// 获取所有包裹收集的资源文件
 		/// </summary>
 		public List<CollectResult> GetAllPackageAssets(EBuildMode buildMode)
