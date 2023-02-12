@@ -23,10 +23,9 @@ namespace YooAsset
 		public PatchManifest Manifest { private set; get; }
 
 
-		public LoadBuildinManifestOperation(string buildinPackageName, string buildinPackageVersion)
+		public LoadBuildinManifestOperation(string buildinPackageName)
 		{
 			_buildinPackageName = buildinPackageName;
-			_buildinPackageVersion = buildinPackageVersion;
 		}
 		internal override void Start()
 		{
@@ -41,7 +40,7 @@ namespace YooAsset
 			{
 				if (_downloader == null)
 				{
-					string fileName = YooAssetSettingsData.GetManifestBinaryFileName(_buildinPackageName, _buildinPackageVersion);
+					string fileName = YooAssetSettingsData.GetManifestBinaryFileName(_buildinPackageName);
 					string filePath = PathHelper.MakeStreamingLoadPath(fileName);
 					string url = PathHelper.ConvertToWWWPath(filePath);
 					_downloader = new UnityWebDataRequester();

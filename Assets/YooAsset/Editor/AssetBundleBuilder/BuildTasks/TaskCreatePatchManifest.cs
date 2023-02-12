@@ -35,10 +35,8 @@ namespace YooAsset.Editor
 			var buildParametersContext = context.GetContextObject<BuildParametersContext>();
 			var buildParameters = buildParametersContext.Parameters;
 			string packageOutputDirectory = buildParametersContext.GetPackageOutputDirectory();
-			if (!Directory.Exists($"{packageOutputDirectory}"))
-			{
-				Directory.CreateDirectory($"{packageOutputDirectory}");
-			}
+			FileUtility.CreateDirectory(packageOutputDirectory);
+
 			var patchBundleDic = GetAllPatchBundle(context);
 			//获取所有package的assembly列表
 			Dictionary<string, List<string>> assemblyBundlesDict = new Dictionary<string, List<string>>();
@@ -84,82 +82,78 @@ namespace YooAsset.Editor
 				patchManifest.PackageVersion = buildParameters.PackageVersion;
 				patchManifest.BundleList = patchBundlePair.Value;
 				var dependAssemblyAddressList = new List<string>();
-
-				if (!Directory.Exists($"{packageOutputDirectory}/{packageName}"))
-				{
-					Directory.CreateDirectory($"{packageOutputDirectory}/{packageName}");
-				}
+				FileUtility.CreateDirectory($"{packageOutputDirectory}/{packageName}");
 
 				var assemblyBundle = patchManifest.BundleList.Select(_ => _).Where(_ => _.IsAssemblyAsset);
-				//if (assemblyBundle != null)
-				//{
-				//	Dictionary<string, int> weights = new Dictionary<string, int>();
-				//	Dictionary<string, List<string>> dependencies = new Dictionary<string, List<string>>();
+                //if (assemblyBundle != null)
+                //{
+                //    Dictionary<string, int> weights = new Dictionary<string, int>();
+                //    Dictionary<string, List<string>> dependencies = new Dictionary<string, List<string>>();
 
-				//	//对当前package的assembly列表进行处理
-				//	for (int i = 0; i < assemblyBundlesDict[patchManifest.PackageName].Count; i++)
-				//	{
-				//		var currentAssemblyName = assemblyBundlesDict[patchManifest.PackageName][i];
-				//		//加载Assembly,查看依赖
-				//		var dllBytes = File.ReadAllBytes(
-				//			BuildConfig.GetHotFixDllsOutputDirByTarget(EditorUserBuildSettings.activeBuildTarget) +
-				//			"/" + currentAssemblyName
-				//			);
+                //    //对当前package的assembly列表进行处理
+                //    for (int i = 0; i < assemblyBundlesDict[patchManifest.PackageName].Count; i++)
+                //    {
+                //        var currentAssemblyName = assemblyBundlesDict[patchManifest.PackageName][i];
+                //        //加载Assembly,查看依赖
+                //        var dllBytes = File.ReadAllBytes(
+                //            BuildConfig.GetHotFixDllsOutputDirByTarget(EditorUserBuildSettings.activeBuildTarget) +
+                //            "/" + currentAssemblyName
+                //            );
 
-				//		var tempAssembly = Assembly.Load(dllBytes);
-				//		var assemblyNames = tempAssembly.GetReferencedAssemblies();
+                //        var tempAssembly = Assembly.Load(dllBytes);
+                //        var assemblyNames = tempAssembly.GetReferencedAssemblies();
 
-				//		dependencies[currentAssemblyName] = new List<string>();
-				//		weights[currentAssemblyName] = 0;
+                //        dependencies[currentAssemblyName] = new List<string>();
+                //        weights[currentAssemblyName] = 0;
 
-				//		//分析当前Assembly的依赖
-				//		foreach (var assemblyName in assemblyNames)
-				//		{
-				//			var name = assemblyName.Name + ".dll";
-				//			//查找是否有跨包依赖
-				//			foreach (var item in assemblyBundlesDict)
-				//			{
-				//				if (item.Value.Contains(name))
-				//				{
-				//					if (item.Key == patchManifest.PackageName)
-				//					{
-				//						//对同包的列表进行权重计算
-				//						if (!dependencies.ContainsKey(currentAssemblyName))
-				//						{
-				//							dependencies[currentAssemblyName] = new List<string>();
-				//						}
-				//						dependencies[currentAssemblyName].Add(name);
+                //        //分析当前Assembly的依赖
+                //        foreach (var assemblyName in assemblyNames)
+                //        {
+                //            var name = assemblyName.Name + ".dll";
+                //            //查找是否有跨包依赖
+                //            foreach (var item in assemblyBundlesDict)
+                //            {
+                //                if (item.Value.Contains(name))
+                //                {
+                //                    if (item.Key == patchManifest.PackageName)
+                //                    {
+                //                        //对同包的列表进行权重计算
+                //                        if (!dependencies.ContainsKey(currentAssemblyName))
+                //                        {
+                //                            dependencies[currentAssemblyName] = new List<string>();
+                //                        }
+                //                        dependencies[currentAssemblyName].Add(name);
 
 
-				//					}
-				//					else
-				//					{
-				//						//跨包依赖
-				//						dependAssemblyAddressList.Add(
-				//							$"{item.Key}@{assemblyBundleLocation[name]}"
-				//							);
-				//					}
-				//				}
-				//			}
-				//		}
-				//		patchManifest.DependAssemblyAddresses = dependAssemblyAddressList.ToArray();
-				//	}
+                //                    }
+                //                    else
+                //                    {
+                //                        //跨包依赖
+                //                        dependAssemblyAddressList.Add(
+                //                            $"{item.Key}@{assemblyBundleLocation[name]}"
+                //                            );
+                //                    }
+                //                }
+                //            }
+                //        }
+                //        patchManifest.DependAssemblyAddresses = dependAssemblyAddressList.ToArray();
+                //    }
 
-				//	foreach (var item in dependencies)
-				//	{
-				//		weights[item.Key] = CalcWeight(item.Key, dependencies);
-				//	}
-				//	List<string> assemblyAddresses = new List<string>(assemblyBundlesDict[patchManifest.PackageName]);
-				//	assemblyAddresses.Sort((_1, _2) => { return weights[_1].CompareTo(weights[_2]); });
-				//	var assemblyAddresseList = new List<string>();
-				//	foreach (var item in assemblyAddresses)
-				//	{
-				//		assemblyAddresseList.Add(assemblyBundleLocation[item]);
-				//	}
-				//	patchManifest.AssemblyAddresses = assemblyAddresseList.ToArray();
-				//}
+                //    foreach (var item in dependencies)
+                //    {
+                //        weights[item.Key] = CalcWeight(item.Key, dependencies);
+                //    }
+                //    List<string> assemblyAddresses = new List<string>(assemblyBundlesDict[patchManifest.PackageName]);
+                //    assemblyAddresses.Sort((_1, _2) => { return weights[_1].CompareTo(weights[_2]); });
+                //    var assemblyAddresseList = new List<string>();
+                //    foreach (var item in assemblyAddresses)
+                //    {
+                //        assemblyAddresseList.Add(assemblyBundleLocation[item]);
+                //    }
+                //    patchManifest.AssemblyAddresses = assemblyAddresseList.ToArray();
+                //}
 
-				List<string> bundleNameList = new List<string>();
+                List<string> bundleNameList = new List<string>();
 				List<string> dependBundleNameList = new List<string>();
 				patchManifest.AssetList = GetAllPatchAsset(context, patchManifest.PackageName, bundleNameList, dependBundleNameList);
 				patchManifest.BundleNameList = bundleNameList.ToArray();
@@ -178,7 +172,7 @@ namespace YooAsset.Editor
 
 				// 创建补丁清单二进制文件
 				{
-					string fileName = YooAssetSettingsData.GetManifestBinaryFileName(packageName, buildParameters.PackageVersion);
+					string fileName = YooAssetSettingsData.GetManifestBinaryFileName(packageName);
 					string filePath = $"{packageOutputDirectory}/{fileName}";
 					PatchManifestTools.SerializeToBinary(filePath, patchManifest);
 
@@ -192,7 +186,7 @@ namespace YooAsset.Editor
 					File.Move(filePath, newFilePath);
 
 					// 创建补丁清单文本文件
-					string manifestJsonFileName = YooAssetSettingsData.GetManifestJsonFileName(packageName, crc);
+					string manifestJsonFileName = YooAssetSettingsData.GetManifestJsonFileNameWitchCrc(packageName, crc);
 					string manifestJsonFilePath = $"{packageOutputDirectory}/{packageName}/{manifestJsonFileName}";
 					PatchManifestTools.SerializeToJson(manifestJsonFilePath, patchManifest);
 					BuildRunner.Log($"创建补丁清单Json文件：{manifestJsonFilePath}");

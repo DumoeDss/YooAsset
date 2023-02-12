@@ -45,7 +45,7 @@ namespace YooAsset
 			{
 				if (_queryCachePackageHashOp == null)
 				{
-					_queryCachePackageHashOp = new QueryCachePackageHashOperation(_packageName, _packageVersion);
+					_queryCachePackageHashOp = new QueryCachePackageHashOperation(_packageName);
 					OperationSystem.StartOperation(_queryCachePackageHashOp);
 				}
 
@@ -67,7 +67,7 @@ namespace YooAsset
 
 			if (_steps == ESteps.VerifyFileHash)
 			{
-				_manifestFilePath = PersistentHelper.GetCacheManifestFilePath(_packageName, _packageVersion);
+				_manifestFilePath = PersistentHelper.GetCacheManifestFilePath(_packageName);
 				if (File.Exists(_manifestFilePath) == false)
 				{
 					_steps = ESteps.Done;
@@ -131,7 +131,7 @@ namespace YooAsset
 				File.Delete(_manifestFilePath);
 			}
 
-			string hashFilePath = PersistentHelper.GetCachePackageHashFilePath(_packageName, _packageVersion);
+			string hashFilePath = PersistentHelper.GetCachePackageVersionFilePath(_packageName);
 			if (File.Exists(hashFilePath))
 			{
 				File.Delete(hashFilePath);

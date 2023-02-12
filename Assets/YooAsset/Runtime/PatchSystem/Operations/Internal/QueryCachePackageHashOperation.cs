@@ -21,10 +21,9 @@ namespace YooAsset
 		public string PackageHash { private set; get; }
 
 
-		public QueryCachePackageHashOperation(string packageName, string packageVersion)
+		public QueryCachePackageHashOperation(string packageName)
 		{
 			_packageName = packageName;
-			_packageVersion = packageVersion;
 		}
 		internal override void Start()
 		{
@@ -37,7 +36,7 @@ namespace YooAsset
 
 			if (_steps == ESteps.LoadCachePackageHashFile)
 			{
-				string filePath = PersistentHelper.GetCachePackageHashFilePath(_packageName, _packageVersion);
+				string filePath = PersistentHelper.GetCachePackageVersionFilePath(_packageName);
 				if (File.Exists(filePath) == false)
 				{
 					_steps = ESteps.Done;

@@ -18,7 +18,7 @@ namespace YooAsset
 		/// <summary>
 		/// 清单文件名称
 		/// </summary>
-		public string PatchManifestFileName = "PatchManifest";
+		public string PatchManifestFileName = "Manifest";
 
 		/// <summary>
 		/// 资源包名正规化（移除路径分隔符）

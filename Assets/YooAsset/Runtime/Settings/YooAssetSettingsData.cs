@@ -50,17 +50,17 @@ namespace YooAsset
 		/// <summary>
 		/// 获取清单文件完整名称
 		/// </summary>
-		public static string GetManifestBinaryFileName(string packageName, string packageVersion)
+		public static string GetManifestBinaryFileName(string packageName)
 		{
-			return $"{Setting.PatchManifestFileName}_{packageName}_{packageVersion}.bytes";
+			return $"{Setting.PatchManifestFileName}_{packageName}.bytes";
 		}
 
 		/// <summary>
 		/// 获取清单文件完整名称
 		/// </summary>
-		public static string GetManifestJsonFileName(string packageName, string packageVersion)
+		public static string GetManifestJsonFileNameWitchCrc(string packageName, string crc)
 		{
-			return $"{Setting.PatchManifestFileName}_{packageName}_{packageVersion}.json";
+			return $"{Setting.PatchManifestFileName}_{packageName}_{crc}.json";
 		}
 
 		/// <summary>
@@ -69,14 +69,6 @@ namespace YooAsset
 		public static string GetManifestBinaryFileNameWitchCrc(string packageName,string crc)
 		{
 			return $"{Setting.PatchManifestFileName}_{packageName}_{crc}.bytes";
-		}
-
-		/// <summary>
-		/// 获取包裹的哈希文件完整名称
-		/// </summary>
-		public static string GetPackageHashFileName(string packageName, string packageVersion)
-		{
-			return $"{Setting.PatchManifestFileName}_{packageName}_{packageVersion}.hash";
 		}
 
 		/// <summary>

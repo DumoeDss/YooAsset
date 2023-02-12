@@ -139,18 +139,9 @@ namespace YooAsset
 		/// <summary>
 		/// 获取沙盒内清单文件的路径
 		/// </summary>
-		public static string GetCacheManifestFilePath(string packageName, string packageVersion)
+		public static string GetCacheManifestFilePath(string packageName)
 		{
-			string fileName = YooAssetSettingsData.GetManifestBinaryFileName(packageName, packageVersion);
-			return PathHelper.MakePersistentLoadPath($"{ManifestFolderName}/{fileName}");
-		}
-
-		/// <summary>
-		/// 获取沙盒内包裹的哈希文件的路径
-		/// </summary>
-		public static string GetCachePackageHashFilePath(string packageName, string packageVersion)
-		{
-			string fileName = YooAssetSettingsData.GetPackageHashFileName(packageName, packageVersion);
+			string fileName = YooAssetSettingsData.GetManifestBinaryFileName(packageName);
 			return PathHelper.MakePersistentLoadPath($"{ManifestFolderName}/{fileName}");
 		}
 

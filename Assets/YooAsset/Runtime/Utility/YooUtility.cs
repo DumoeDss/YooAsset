@@ -291,55 +291,5 @@ namespace YooAsset
 			return ToString(hashBytes);
 		}
 		#endregion
-
-		#region CRC32
-		/// <summary>
-		/// 获取字符串的CRC32
-		/// </summary>
-		public static string StringCRC32(string str)
-		{
-			byte[] buffer = Encoding.UTF8.GetBytes(str);
-			return BytesCRC32(buffer);
-		}
-
-		/// <summary>
-		/// 获取文件的CRC32
-		/// </summary>
-		public static string FileCRC32(string filePath)
-		{
-			try
-			{
-				using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read))
-				{
-					return StreamCRC32(fs);
-				}
-			}
-			catch (Exception e)
-			{
-				YooLogger.Exception(e);
-				return string.Empty;
-			}
-		}
-
-		/// <summary>
-		/// 获取数据流的CRC32
-		/// </summary>
-		public static string StreamCRC32(Stream stream)
-		{
-			CRC32Algorithm hash = new CRC32Algorithm();
-			byte[] hashBytes = hash.ComputeHash(stream);
-			return ToString(hashBytes);
-		}
-
-		/// <summary>
-		/// 获取字节数组的CRC32
-		/// </summary>
-		public static string BytesCRC32(byte[] buffer)
-		{
-			CRC32Algorithm hash = new CRC32Algorithm();
-			byte[] hashBytes = hash.ComputeHash(buffer);
-			return ToString(hashBytes);
-		}
-		#endregion
 	}
 }

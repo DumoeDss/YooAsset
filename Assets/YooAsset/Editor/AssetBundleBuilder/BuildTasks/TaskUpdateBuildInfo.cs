@@ -104,7 +104,7 @@ namespace YooAsset.Editor
 			if (buildMode == EBuildMode.DryRunBuild || buildMode == EBuildMode.SimulateBuild)
 				return "00000000"; //8位
 			else
-				return HashUtility.FileCRC32(filePath);
+				return Crc32Helper.CalcHash(filePath);
 		}
 		private long GetBundleFileSize(string filePath, BuildParametersContext buildParametersContext)
 		{

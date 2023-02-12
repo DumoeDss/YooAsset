@@ -149,7 +149,7 @@ namespace YooAsset
 				// 再验证文件CRC
 				if (verifyLevel == EVerifyLevel.High)
 				{
-					string crc = HashUtility.FileCRC32(filePath);
+					string crc = Crc32Helper.CalcHash(filePath);
 					if (crc == fileCRC)
 						return EVerifyResult.Succeed;
 					else

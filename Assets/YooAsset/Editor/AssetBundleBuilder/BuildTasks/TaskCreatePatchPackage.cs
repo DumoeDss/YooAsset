@@ -74,7 +74,10 @@ namespace YooAsset.Editor
 				foreach (var patchBundle in patchManifest.BundleList)
 				{
 					string sourcePath = $"{packageOutputDirectory}/{YooAssetSettings.OutputFolderName}/{patchBundle.BundleName}";
-					string destPath = $"{dir}/{patchBundle.BundleName}_{patchBundle.FileHash}";
+					var fileNames = patchBundle.BundleName.Split('.');
+					var extension = $".{fileNames[fileNames.Length - 1]}";
+					var fileName = patchBundle.BundleName.Replace(extension, $"_{patchBundle.FileHash}{extension}");
+					string destPath = $"{dir}/{fileName}";
 					EditorTools.CopyFile(sourcePath, destPath, true);
 					EditorTools.DisplayProgressBar("拷贝补丁文件", ++progressValue, patchFileTotalCount);
 				}
