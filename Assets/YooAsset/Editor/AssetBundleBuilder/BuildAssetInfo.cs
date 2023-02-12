@@ -68,8 +68,10 @@ namespace YooAsset.Editor
 		public BuildAssetInfo(BuildAssetInfo clone)
 		{
 			PackageName = clone.PackageName;
-			_mainBundleName = $"{PackageName}@{clone._mainBundleName}";
-			_shareBundleName = $"{PackageName}@{clone._shareBundleName}";
+			if(!string.IsNullOrEmpty(clone._mainBundleName))
+				_mainBundleName = $"{PackageName}@{clone._mainBundleName}";
+			if (!string.IsNullOrEmpty(clone._shareBundleName))
+				_shareBundleName = $"{PackageName}@{clone._shareBundleName}";
 			CollectorType = clone.CollectorType;
 			Address = clone.Address;
 			IncludeInBuild = clone.IncludeInBuild;
@@ -228,10 +230,35 @@ namespace YooAsset.Editor
                         {
 							prefix = "auto_dependencies";
                         }
+
+						var package = AssetBundleCollectorSettingData.Setting.Packages.Find(_ => _.PackageName == PackageName);
+						
 						if (uniqueBundleName)
 							_shareBundleName = $"{PackageName.ToLower()}_{prefix}_{bundleName}.{YooAssetSettingsData.Setting.AssetBundleFileVariant}";
 						else
 							_shareBundleName = $"{prefix}_{bundleName}.{YooAssetSettingsData.Setting.AssetBundleFileVariant}";
+
+						if (package != null)
+						{
+							var group = package.Groups.Find(_ => _.GroupName == _shareBundleName);
+							if (group == null)
+							{
+								group = new AssetBundleCollectorGroup()
+								{
+									GroupName = _shareBundleName,
+									GroupDesc = "自动依赖",
+								};
+
+								package.Groups.Add(group);
+
+							}
+							group.Collectors.Add(new AssetBundleCollector()
+							{
+								CollectPath = AssetPath,
+								CollectorType = ECollectorType.DependAssetCollector,
+								PackRuleName = "PackGroup",
+							});
+						}
 					}
 				}
 			}

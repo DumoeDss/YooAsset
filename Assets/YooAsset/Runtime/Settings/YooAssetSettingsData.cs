@@ -2,6 +2,13 @@
 
 namespace YooAsset
 {
+	public class YooAssetVersion
+	{
+		public string crc;
+		public long size;
+		public int version;
+	}
+
 	internal static class YooAssetSettingsData
 	{
 		private static YooAssetSettings _setting = null;
@@ -57,11 +64,27 @@ namespace YooAsset
 		}
 
 		/// <summary>
+		/// 获取清单文件完整名称
+		/// </summary>
+		public static string GetManifestBinaryFileNameWitchCrc(string packageName,string crc)
+		{
+			return $"{Setting.PatchManifestFileName}_{packageName}_{crc}.bytes";
+		}
+
+		/// <summary>
 		/// 获取包裹的哈希文件完整名称
 		/// </summary>
 		public static string GetPackageHashFileName(string packageName, string packageVersion)
 		{
 			return $"{Setting.PatchManifestFileName}_{packageName}_{packageVersion}.hash";
+		}
+
+		/// <summary>
+		/// 获取包裹的版本文件完整名称
+		/// </summary>
+		public static string GetPackageVersionFileNameWithCrc(string packageName, string crc)
+		{
+			return $"{Setting.PatchManifestFileName}_{packageName}_{crc}.version";
 		}
 
 		/// <summary>

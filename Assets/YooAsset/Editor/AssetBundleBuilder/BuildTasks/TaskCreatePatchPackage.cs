@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 
 namespace YooAsset.Editor
 {
@@ -10,17 +11,19 @@ namespace YooAsset.Editor
 		{
 			var buildParameters = context.GetContextObject<BuildParametersContext>();
 			var buildMapContext = context.GetContextObject<BuildMapContext>();
+			var patchManifestContext = context.GetContextObject<PatchManifestContext>();
+			
 			var buildMode = buildParameters.Parameters.BuildMode;
 			if (buildMode == EBuildMode.ForceRebuild || buildMode == EBuildMode.IncrementalBuild)
 			{
-				CopyPatchFiles(buildParameters, buildMapContext);
+				CopyPatchFiles(buildParameters, buildMapContext, patchManifestContext);
 			}
 		}
 
 		/// <summary>
 		/// 拷贝补丁文件到补丁包目录
 		/// </summary>
-		private void CopyPatchFiles(BuildParametersContext buildParametersContext, BuildMapContext buildMapContext)
+		private void CopyPatchFiles(BuildParametersContext buildParametersContext, BuildMapContext buildMapContext, PatchManifestContext patchManifestContext)
 		{
 			var buildParameters = buildParametersContext.Parameters;
 			string pipelineOutputDirectory = buildParametersContext.GetPipelineOutputDirectory();
@@ -48,16 +51,10 @@ namespace YooAsset.Editor
 			{
 				// 拷贝UnityManifest序列化文件
 				{
-					string sourcePath = $"{pipelineOutputDirectory}/{YooAssetSettings.OutputFolderName}";
+					string sourcePath = $"{pipelineOutputDirectory}";
 					string destPath = $"{packageOutputDirectory}/{YooAssetSettings.OutputFolderName}";
-					EditorTools.CopyFile(sourcePath, destPath, true);
-				}
-
-				// 拷贝UnityManifest文本文件
-				{
-					string sourcePath = $"{pipelineOutputDirectory}/{YooAssetSettings.OutputFolderName}.manifest";
-					string destPath = $"{packageOutputDirectory}/{YooAssetSettings.OutputFolderName}.manifest";
-					EditorTools.CopyFile(sourcePath, destPath, true);
+					EditorTools.CopyDirectory(sourcePath, destPath);
+					EditorTools.DeleteDirectory(sourcePath);
 				}
 			}
 			else
@@ -65,14 +62,24 @@ namespace YooAsset.Editor
 				throw new System.NotImplementedException();
 			}
 
-			// 拷贝所有补丁文件
-			int progressValue = 0;
-			int patchFileTotalCount = buildMapContext.BundleInfos.Count;
-			foreach (var bundleInfo in buildMapContext.BundleInfos)
+			foreach (var PatchManifest in patchManifestContext.PatchManifests)
 			{
-				EditorTools.CopyFile(bundleInfo.PatchInfo.BuildOutputFilePath, bundleInfo.PatchInfo.PatchOutputFilePath, true);
-				EditorTools.DisplayProgressBar("拷贝补丁文件", ++progressValue, patchFileTotalCount);
+				var package = PatchManifest.Key.Split('_')[1];
+				string dir = $"{packageOutputDirectory}/{package}";
+
+				// 拷贝所有补丁文件
+				int progressValue = 0;
+				PatchManifest patchManifest = PatchManifest.Value;
+				int patchFileTotalCount = patchManifest.BundleList.Count;
+				foreach (var patchBundle in patchManifest.BundleList)
+				{
+					string sourcePath = $"{packageOutputDirectory}/{YooAssetSettings.OutputFolderName}/{patchBundle.BundleName}";
+					string destPath = $"{dir}/{patchBundle.BundleName}_{patchBundle.FileHash}";
+					EditorTools.CopyFile(sourcePath, destPath, true);
+					EditorTools.DisplayProgressBar("拷贝补丁文件", ++progressValue, patchFileTotalCount);
+				}
 			}
+
 			EditorTools.ClearProgressBar();
 		}
 	}

@@ -62,9 +62,9 @@ namespace YooAsset.Editor
 		/// <summary>
 		/// 获取构建管线的输出目录
 		/// </summary>
-		public static string MakePipelineOutputDirectory(string outputRoot, string buildPackage, BuildTarget buildTarget, EBuildMode buildMode)
+		public static string MakePipelineOutputDirectory(string outputRoot,  BuildTarget buildTarget, EBuildMode buildMode)
 		{
-			string outputDirectory = $"{outputRoot}/{buildTarget}/{buildPackage}/{YooAssetSettings.OutputFolderName}";
+			string outputDirectory = $"{outputRoot}/{buildTarget}/{YooAssetSettings.OutputFolderName}";
 			return outputDirectory;
 		}
 	}

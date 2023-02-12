@@ -275,7 +275,8 @@ namespace YooAsset.Editor
 			buildParameters.BuildTarget = _buildTarget;
 			buildParameters.BuildPipeline = AssetBundleBuilderSettingData.Setting.BuildPipeline;
 			buildParameters.BuildMode = AssetBundleBuilderSettingData.Setting.BuildMode;
-			buildParameters.PackageNames = AssetBundleBuilderSettingData.Setting.BuildPackage;
+			buildParameters.PackageNames = GetBuildPackageNames();
+			buildParameters.ExcludePackageNames = GetExcludePackageNames();
 			buildParameters.PackageVersion = _buildVersionField.value;
 			buildParameters.VerifyBuildingResult = true;
 			buildParameters.EncryptionServices = CreateEncryptionServicesInstance();
@@ -304,7 +305,8 @@ namespace YooAsset.Editor
 			buildParameters.BuildTarget = _buildTarget;
 			buildParameters.BuildPipeline = AssetBundleBuilderSettingData.Setting.BuildPipeline;
 			buildParameters.BuildMode = AssetBundleBuilderSettingData.Setting.BuildMode;
-			buildParameters.PackageNames = AssetBundleBuilderSettingData.Setting.BuildPackage;
+			buildParameters.PackageNames = GetBuildPackageNames();
+			buildParameters.ExcludePackageNames = GetExcludePackageNames();
 			buildParameters.PackageVersion = _buildVersionField.value;
 			buildParameters.VerifyBuildingResult = true;
 			buildParameters.EncryptionServices = CreateEncryptionServicesInstance();
@@ -349,6 +351,19 @@ namespace YooAsset.Editor
 			//AssetBundleBuilderSettingData.Setting.BuildPackage = _buildPackageNames[0];
 			return 0;
 		}
+
+		private List<string> GetExcludePackageNames()
+        {
+			List<string> result = new List<string>();
+			foreach (var package in AssetBundleCollectorSettingData.Setting.Packages)
+			{
+				if (!package.IncludeInBuild)
+					result.Add(package.PackageName);
+			}
+			return result;
+		}
+
+
 		private List<string> GetBuildPackageNames()
 		{
 			List<string> result = new List<string>();

@@ -115,8 +115,8 @@ namespace YooAsset.Editor
 		/// </summary>
 		public List<CollectResult> GetPackageAssets(EBuildMode buildMode, List<string> packageNames)
 		{
-			if (packageNames==null|| packageNames.Count==0)
-				throw new Exception("Build package name is null or mepty !");
+			if (packageNames == null || packageNames.Count == 0)
+				return null;
 			List<CollectResult> collectResultList = new List<CollectResult>(1000);
 
 			foreach (var package in Packages)

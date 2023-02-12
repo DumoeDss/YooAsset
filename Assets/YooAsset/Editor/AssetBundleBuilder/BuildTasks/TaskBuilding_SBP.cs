@@ -33,7 +33,7 @@ namespace YooAsset.Editor
 			// 开始构建
 			IBundleBuildResults buildResults;
 			var buildParameters = buildParametersContext.GetSBPBuildParameters();
-			var shadersBunldeName = YooAssetSettingsData.GetUnityShadersBundleFullName(buildMapContext.UniqueBundleName, buildParametersContext.Parameters.PackageNames);
+			var shadersBunldeName = YooAssetSettingsData.GetUnityShadersBundleFullName(buildMapContext.UniqueBundleName, "");//buildParametersContext.Parameters.PackageNames
 			var taskList = SBPBuildTasks.Create(shadersBunldeName);
 			ReturnCode exitCode = ContentPipeline.BuildAssetBundles(buildParameters, buildContent, out buildResults, taskList);
 			if (exitCode < 0)
@@ -63,7 +63,7 @@ namespace YooAsset.Editor
 			{
 				if (bundleInfo.IsRawFile)
 				{
-					string dest = $"{pipelineOutputDirectory}/{bundleInfo.BundleName}";
+					string dest = $"{pipelineOutputDirectory}/{bundleInfo.Package}/{bundleInfo.BundleName}";
 					foreach (var buildAsset in bundleInfo.BuildinAssets)
 					{
 						if (buildAsset.IsRawAsset)

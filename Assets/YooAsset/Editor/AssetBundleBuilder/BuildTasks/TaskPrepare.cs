@@ -19,9 +19,9 @@ namespace YooAsset.Editor
 			// 检测构建参数合法性
 			if (buildParameters.BuildTarget == BuildTarget.NoTarget)
 				throw new Exception("请选择目标平台");
-			if (string.IsNullOrEmpty(buildParameters.PackageNames))
-				throw new Exception("包裹名称不能为空");
-			if(string.IsNullOrEmpty(buildParameters.PackageVersion))
+            if (buildParameters.PackageNames==null|| buildParameters.PackageNames.Count==0)
+                throw new Exception("包裹名称不能为空");
+            if (string.IsNullOrEmpty(buildParameters.PackageVersion))
 				throw new Exception("包裹版本不能为空");
 
 			if (buildParameters.BuildMode != EBuildMode.SimulateBuild)

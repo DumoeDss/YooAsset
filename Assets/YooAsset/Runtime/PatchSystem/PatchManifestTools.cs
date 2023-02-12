@@ -66,6 +66,8 @@ namespace YooAsset
 					buffer.WriteByte(patchBundle.LoadMethod);
 					buffer.WriteUTF8Array(patchBundle.Tags);
 				}
+				buffer.WriteUTF8Array(patchManifest.AssemblyAddresses);
+				buffer.WriteUTF8Array(patchManifest.DependAssemblyAddresses);
 
 				// 写入文件流
 				buffer.WriteToStream(fs);
@@ -130,6 +132,9 @@ namespace YooAsset
 					patchBundle.Tags = buffer.ReadUTF8Array();
 					manifest.BundleList.Add(patchBundle);
 				}
+
+				manifest.AssemblyAddresses = buffer.ReadUTF8Array();
+				manifest.DependAssemblyAddresses = buffer.ReadUTF8Array();
 			}
 
 			// BundleDic

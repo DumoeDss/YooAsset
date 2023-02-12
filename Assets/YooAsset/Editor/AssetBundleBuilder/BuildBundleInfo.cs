@@ -228,6 +228,8 @@ namespace YooAsset.Editor
 			patchBundle.IsRawFile = IsRawFile;
 			patchBundle.LoadMethod = (byte)LoadMethod;
 			patchBundle.Tags = GetBundleTags();
+			patchBundle.IsAssemblyAsset = IsAssemblyAsset;
+			patchBundle.AssemblyAddresses = AssemblyAddresses;
 			return patchBundle;
 		}
 	}

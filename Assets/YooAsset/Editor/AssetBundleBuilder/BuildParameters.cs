@@ -61,6 +61,8 @@ namespace YooAsset.Editor
 		/// </summary>
 		public List<string> PackageNames;
 
+		public List<string> ExcludePackageNames;
+
 		/// <summary>
 		/// 构建的包裹版本
 		/// </summary>

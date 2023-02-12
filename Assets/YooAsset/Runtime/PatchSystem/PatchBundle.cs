@@ -56,6 +56,16 @@ namespace YooAsset
 		}
 
 		/// <summary>
+		/// 是否是脚本库文件
+		/// </summary>
+		public bool IsAssemblyAsset;
+
+		/// <summary>
+		/// 脚本库文件Address
+		/// </summary>
+		public string AssemblyAddresses;
+
+		/// <summary>
 		/// 缓存的数据文件路径
 		/// </summary>
 		private string _cachedDataFilePath;

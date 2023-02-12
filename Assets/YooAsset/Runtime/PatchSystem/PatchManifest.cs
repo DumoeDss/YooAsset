@@ -47,6 +47,16 @@ namespace YooAsset
 		/// </summary>
 		public List<PatchBundle> BundleList = new List<PatchBundle>();
 
+		/// <summary>
+		/// 脚本文件Address列表
+		/// </summary>
+		public string[] AssemblyAddresses;
+
+		/// <summary>
+		/// 依赖的脚本文件Address列表
+		/// </summary>
+		public string[] DependAssemblyAddresses;
+
 		public string[] BundleNameList;
 		public string[] DependBundleNameList;
 

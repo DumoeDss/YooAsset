@@ -31,7 +31,7 @@ namespace YooAsset.Editor
 		{
 			if (string.IsNullOrEmpty(_pipelineOutputDirectory))
 			{
-				_pipelineOutputDirectory = AssetBundleBuilderHelper.MakePipelineOutputDirectory(Parameters.OutputRoot, Parameters.PackageNames, Parameters.BuildTarget, Parameters.BuildMode);
+				_pipelineOutputDirectory = AssetBundleBuilderHelper.MakePipelineOutputDirectory(Parameters.OutputRoot, Parameters.BuildTarget, Parameters.BuildMode);
 			}
 			return _pipelineOutputDirectory;
 		}
@@ -43,7 +43,7 @@ namespace YooAsset.Editor
 		{
 			if (string.IsNullOrEmpty(_packageOutputDirectory))
 			{
-				_packageOutputDirectory = $"{Parameters.OutputRoot}/{Parameters.BuildTarget}/{Parameters.PackageNames}/{Parameters.PackageVersion}";
+				_packageOutputDirectory = $"{Parameters.OutputRoot}/{Parameters.BuildTarget}/{Parameters.PackageVersion}";
 			}
 			return _packageOutputDirectory;
 		}
