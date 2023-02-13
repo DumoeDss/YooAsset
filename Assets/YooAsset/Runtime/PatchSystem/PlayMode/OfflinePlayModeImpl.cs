@@ -12,10 +12,10 @@ namespace YooAsset
 		/// <summary>
 		/// 异步初始化
 		/// </summary>
-		public InitializationOperation InitializeAsync(string packageName, bool locationToLower)
+		public InitializationOperation InitializeAsync(string packageName, string packageVersion, bool locationToLower)
 		{
 			_locationToLower = locationToLower;
-			var operation = new OfflinePlayModeInitializationOperation(this, packageName);
+			var operation = new OfflinePlayModeInitializationOperation(this, packageName, packageVersion);
 			OperationSystem.StartOperation(operation);
 			return operation;
 		}

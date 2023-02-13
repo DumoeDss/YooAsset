@@ -14,11 +14,11 @@ namespace YooAsset
 		/// <summary>
 		/// 获取基于流文件夹的加载路径
 		/// </summary>
-		public static string MakeStreamingLoadPath(string path)
+		public static string MakeStreamingLoadPath(string path,string packageName)
 		{
 			if (string.IsNullOrEmpty(_buildinPath))
 			{
-				_buildinPath = StringUtility.Format("{0}/{1}", UnityEngine.Application.streamingAssetsPath, YooAssetSettings.StreamingAssetsBuildinFolder);
+				_buildinPath = StringUtility.Format("{0}/{1}/{2}", UnityEngine.Application.streamingAssetsPath, YooAssetSettings.StreamingAssetsBuildinFolder, packageName);
 			}
 			return StringUtility.Format("{0}/{1}", _buildinPath, path);
 		}
@@ -139,18 +139,18 @@ namespace YooAsset
 		/// <summary>
 		/// 获取沙盒内清单文件的路径
 		/// </summary>
-		public static string GetCacheManifestFilePath(string packageName)
+		public static string GetCacheManifestFilePath(string packageName,string packageVersion)
 		{
-			string fileName = YooAssetSettingsData.GetManifestBinaryFileName(packageName);
+			string fileName = YooAssetSettingsData.GetManifestBinaryFileName(packageName, packageVersion);
 			return PathHelper.MakePersistentLoadPath($"{ManifestFolderName}/{fileName}");
 		}
 
 		/// <summary>
 		/// 获取沙盒内包裹的版本文件的路径
 		/// </summary>
-		public static string GetCachePackageVersionFilePath(string packageName)
+		public static string GetCachePackageVersionFilePath(string packageName,string packageVersion)
 		{
-			string fileName = YooAssetSettingsData.GetPackageVersionFileName(packageName);
+			string fileName = YooAssetSettingsData.GetPackageVersionFileName(packageName, packageVersion);
 			return PathHelper.MakePersistentLoadPath($"{ManifestFolderName}/{fileName}");
 		}
 
@@ -159,8 +159,9 @@ namespace YooAsset
 		/// </summary>
 		public static void SaveCachePackageVersionFile(string packageName, string version)
 		{
-			string filePath = GetCachePackageVersionFilePath(packageName);
-			FileUtility.CreateFile(filePath, version);
+			string filePath = GetCachePackageVersionFilePath(packageName, version);
+			
+			//FileUtility.CreateFile(filePath, version);
 		}
 	}
 }

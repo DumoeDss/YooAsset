@@ -17,9 +17,10 @@ namespace YooAsset
 		private UnityWebFileRequester _downloader2;
 		private ESteps _steps = ESteps.None;
 
-		public UnpackBuildinManifestOperation(string buildinPackageName)
+		public UnpackBuildinManifestOperation(string buildinPackageName,string buildinPackageVersion)
 		{
 			_buildinPackageName = buildinPackageName;
+			_buildinPackageVersion = buildinPackageVersion;
 		}
 		internal override void Start()
 		{
@@ -34,9 +35,9 @@ namespace YooAsset
 			{
 				if (_downloader1 == null)
 				{
-					string savePath = PersistentHelper.GetCachePackageVersionFilePath(_buildinPackageName);
-					string fileName = YooAssetSettingsData.GetPackageVersionFileName(_buildinPackageName);
-					string filePath = PathHelper.MakeStreamingLoadPath(fileName);
+					string savePath = PersistentHelper.GetCachePackageVersionFilePath(_buildinPackageName, _buildinPackageVersion);
+					string fileName = YooAssetSettingsData.GetPackageVersionFileName(_buildinPackageName, _buildinPackageVersion);
+					string filePath = PathHelper.MakeStreamingLoadPath(fileName, _buildinPackageName);
 					string url = PathHelper.ConvertToWWWPath(filePath);
 					_downloader1 = new UnityWebFileRequester();
 					_downloader1.SendRequest(url, savePath);
@@ -63,9 +64,9 @@ namespace YooAsset
 			{
 				if (_downloader2 == null)
 				{
-					string savePath = PersistentHelper.GetCacheManifestFilePath(_buildinPackageName);
-					string fileName = YooAssetSettingsData.GetManifestBinaryFileName(_buildinPackageName);
-					string filePath = PathHelper.MakeStreamingLoadPath(fileName);
+					string savePath = PersistentHelper.GetCacheManifestFilePath(_buildinPackageName, _buildinPackageVersion);
+					string fileName = YooAssetSettingsData.GetManifestBinaryFileName(_buildinPackageName, _buildinPackageVersion);
+					string filePath = PathHelper.MakeStreamingLoadPath(fileName, _buildinPackageName);
 					string url = PathHelper.ConvertToWWWPath(filePath);
 					_downloader2 = new UnityWebFileRequester();
 					_downloader2.SendRequest(url, savePath);

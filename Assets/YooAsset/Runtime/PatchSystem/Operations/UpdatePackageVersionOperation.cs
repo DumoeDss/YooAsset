@@ -12,7 +12,7 @@ namespace YooAsset
 		/// <summary>
 		/// 当前最新的包裹版本
 		/// </summary>
-		public string PackageVersion { protected set; get; }
+		public YooAssetVersion PackageVersion { protected set; get; }
 	}
 
 	/// <summary>
@@ -57,15 +57,17 @@ namespace YooAsset
 
 		private readonly HostPlayModeImpl _impl;
 		private readonly string _packageName;
+		private readonly string _packageVersion;
 		private readonly bool _appendTimeTicks;
 		private readonly int _timeout;
 		private QueryRemotePackageVersionOperation _queryRemotePackageVersionOp;
 		private ESteps _steps = ESteps.None;
 
-		internal HostPlayModeUpdatePackageVersionOperation(HostPlayModeImpl impl, string packageName, bool appendTimeTicks, int timeout)
+		internal HostPlayModeUpdatePackageVersionOperation(HostPlayModeImpl impl, string packageName, string packageVersion, bool appendTimeTicks, int timeout)
 		{
 			_impl = impl;
 			_packageName = packageName;
+			_packageVersion = packageVersion;
 			_appendTimeTicks = appendTimeTicks;
 			_timeout = timeout;
 		}
@@ -82,7 +84,7 @@ namespace YooAsset
 			{
 				if (_queryRemotePackageVersionOp == null)
 				{
-					_queryRemotePackageVersionOp = new QueryRemotePackageVersionOperation(_impl, _packageName, _appendTimeTicks, _timeout);
+					_queryRemotePackageVersionOp = new QueryRemotePackageVersionOperation(_impl, _packageName, _packageVersion, _appendTimeTicks, _timeout);
 					OperationSystem.StartOperation(_queryRemotePackageVersionOp);
 				}
 

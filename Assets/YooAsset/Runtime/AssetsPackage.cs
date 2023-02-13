@@ -22,6 +22,12 @@ namespace YooAsset
 		public string PackageName { private set; get; }
 
 		/// <summary>
+		/// 包裹版本
+		/// </summary>
+		public string PackageVersion { private set; get; }
+
+
+		/// <summary>
 		/// 依赖的包裹名
 		/// </summary>
 		public List<string> DependeciesPackageNames { private set; get; }
@@ -38,9 +44,10 @@ namespace YooAsset
 		private AssetsPackage()
 		{
 		}
-		internal AssetsPackage(string packageName)
+		internal AssetsPackage(string packageName, string packageVersion)
 		{
 			PackageName = packageName;
+			PackageVersion = packageVersion;
 		}
 
 		/// <summary>
@@ -105,7 +112,7 @@ namespace YooAsset
 				_assetSystemImpl.Initialize(PackageName, false, parameters.AssetLoadingMaxNumber, parameters.DecryptionServices, _bundleServices);
 
 				var initializeParameters = parameters as OfflinePlayModeParameters;
-				initializeOperation = offlinePlayModeImpl.InitializeAsync(PackageName, initializeParameters.LocationToLower);
+				initializeOperation = offlinePlayModeImpl.InitializeAsync(PackageName, PackageVersion, initializeParameters.LocationToLower);
 			}
 			else if (_playMode == EPlayMode.HostPlayMode)
 			{
@@ -117,6 +124,7 @@ namespace YooAsset
 				var initializeParameters = parameters as HostPlayModeParameters;
 				initializeOperation = hostPlayModeImpl.InitializeAsync(
 					PackageName,
+					PackageVersion,
 					initializeParameters.LocationToLower,
 					initializeParameters.DefaultHostServer,
 					initializeParameters.FallbackHostServer,
@@ -204,7 +212,7 @@ namespace YooAsset
 		/// </summary>
 		/// <param name="appendTimeTicks">在URL末尾添加时间戳</param>
 		/// <param name="timeout">超时时间（默认值：60秒）</param>
-		public UpdatePackageVersionOperation UpdatePackageVersionAsync(bool appendTimeTicks = true, int timeout = 60)
+		public UpdatePackageVersionOperation UpdatePackageVersionAsync(bool appendTimeTicks = false, int timeout = 60)
 		{
 			DebugCheckInitialize();
 			return _playModeServices.UpdatePackageVersionAsync(appendTimeTicks, timeout);
@@ -773,6 +781,43 @@ namespace YooAsset
 			data.ProviderInfos = _assetSystemImpl.GetDebugReportInfos();
 			return data;
 		}
+		#endregion
+
+		bool isAssemblyLoaded;
+		#region 加载脚本
+//		public async UniTask LoadAssembly()
+//		{
+//#if !UNITY_EDITOR
+//            if (!isAssemblyLoaded)
+//            {
+//				foreach (var assemblyAddress in _hostPlayModeImpl.LocalPatchManifest.AssemblyAddresses)
+//				{
+//					var handle = LoadAssetAsync<TextAsset>(assemblyAddress);
+//					await handle.ToUniTask();
+//					TextAsset textAsset = handle.AssetObject as TextAsset;
+//					var deviceLockSettings = new DeviceLockSettings(DeviceLockLevel.None);
+//					var encryptionSettings = new EncryptionSettings("uhLjaX5yqdB9mUV");
+//					var settings = new ObscuredFileSettings(encryptionSettings, deviceLockSettings);
+
+//					using (MemoryStream ms = new MemoryStream(textAsset.bytes))
+//					{
+//						ObscuredFile obscuredFile = new ObscuredFile(settings);
+//						var result = obscuredFile.ReadAllBytes(ms);
+//						if (result.Success)
+//						{
+//							var dllBytes = result.Data;
+//							System.Reflection.Assembly.Load(dllBytes);
+//                        }
+//                        else
+//                        {
+//							UnityEngine.Debug.LogError(result.Error);
+//                        }
+//					}
+//				}
+//				isAssemblyLoaded = true;
+//            }
+//#endif
+//		}
 		#endregion
 	}
 }

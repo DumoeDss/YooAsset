@@ -1,4 +1,6 @@
 ﻿
+using AquaSys.Base;
+
 namespace YooAsset
 {
 	internal class QueryBuildinPackageVersionOperation : AsyncOperationBase
@@ -11,18 +13,20 @@ namespace YooAsset
 		}
 
 		private readonly string _packageName;
+		private readonly string _packageVersion;
 		private UnityWebDataRequester _downloader;
 		private ESteps _steps = ESteps.None;
 
 		/// <summary>
 		/// 包裹版本
 		/// </summary>
-		public string PackageVersion { private set; get; }
+		public YooAssetVersion PackageVersion { private set; get; }
 
 
-		public QueryBuildinPackageVersionOperation(string packageName)
+		public QueryBuildinPackageVersionOperation(string packageName,string packageVersion)
 		{
 			_packageName = packageName;
+			_packageVersion = packageVersion;
 		}
 		internal override void Start()
 		{
@@ -37,8 +41,8 @@ namespace YooAsset
 			{
 				if (_downloader == null)
 				{
-					string fileName = YooAssetSettingsData.GetPackageVersionFileName(_packageName);
-					string filePath = PathHelper.MakeStreamingLoadPath(fileName);
+					string fileName = YooAssetSettingsData.GetPackageVersionFileName(_packageName, _packageVersion);
+					string filePath = PathHelper.MakeStreamingLoadPath(fileName, _packageName);
 					string url = PathHelper.ConvertToWWWPath(filePath);
 					_downloader = new UnityWebDataRequester();
 					_downloader.SendRequest(url);
@@ -55,8 +59,8 @@ namespace YooAsset
 				}
 				else
 				{
-					PackageVersion = _downloader.GetText();
-					if (string.IsNullOrEmpty(PackageVersion))
+					PackageVersion = StreamTools.DeserializeObject<YooAssetVersion>(_downloader.GetText());
+					if (PackageVersion==null)
 					{
 						_steps = ESteps.Done;
 						Status = EOperationStatus.Failed;

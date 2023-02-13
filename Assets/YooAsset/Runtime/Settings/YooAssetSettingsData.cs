@@ -50,14 +50,6 @@ namespace YooAsset
 		/// <summary>
 		/// 获取清单文件完整名称
 		/// </summary>
-		public static string GetManifestBinaryFileName(string packageName)
-		{
-			return $"{Setting.PatchManifestFileName}_{packageName}.bytes";
-		}
-
-		/// <summary>
-		/// 获取清单文件完整名称
-		/// </summary>
 		public static string GetManifestJsonFileNameWitchCrc(string packageName, string crc)
 		{
 			return $"{Setting.PatchManifestFileName}_{packageName}_{crc}.json";
@@ -66,7 +58,7 @@ namespace YooAsset
 		/// <summary>
 		/// 获取清单文件完整名称
 		/// </summary>
-		public static string GetManifestBinaryFileNameWitchCrc(string packageName,string crc)
+		public static string GetManifestBinaryFileName(string packageName,string crc)
 		{
 			return $"{Setting.PatchManifestFileName}_{packageName}_{crc}.bytes";
 		}
@@ -74,18 +66,18 @@ namespace YooAsset
 		/// <summary>
 		/// 获取包裹的版本文件完整名称
 		/// </summary>
-		public static string GetPackageVersionFileNameWithCrc(string packageName, string crc)
+		public static string GetPackageVersionFileName(string packageName, string crc)
 		{
 			return $"{Setting.PatchManifestFileName}_{packageName}_{crc}.version";
 		}
 
-		/// <summary>
-		/// 获取包裹的版本文件完整名称
-		/// </summary>
-		public static string GetPackageVersionFileName(string packageName)
-		{
-			return $"{Setting.PatchManifestFileName}_{packageName}.version";
-		}
+		///// <summary>
+		///// 获取包裹的版本文件完整名称
+		///// </summary>
+		//public static string GetPackageVersionFileName(string packageName)
+		//{
+		//	return $"{Setting.PatchManifestFileName}_{packageName}.version";
+		//}
 
 		/// <summary>
 		/// 获取着色器资源包全名称（包含后缀名）

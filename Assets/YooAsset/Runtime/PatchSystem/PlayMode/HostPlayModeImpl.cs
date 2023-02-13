@@ -10,6 +10,7 @@ namespace YooAsset
 
 		// 参数相关
 		private string _packageName;
+		private string _packageVersion;
 		private bool _locationToLower;
 		private string _defaultHostServer;
 		private string _fallbackHostServer;
@@ -18,15 +19,16 @@ namespace YooAsset
 		/// <summary>
 		/// 异步初始化
 		/// </summary>
-		public InitializationOperation InitializeAsync(string packageName, bool locationToLower, string defaultHostServer, string fallbackHostServer, IQueryServices queryServices)
+		public InitializationOperation InitializeAsync(string packageName, string packageVersion, bool locationToLower, string defaultHostServer, string fallbackHostServer, IQueryServices queryServices)
 		{
 			_packageName = packageName;
+			_packageVersion = packageVersion;
 			_locationToLower = locationToLower;
 			_defaultHostServer = defaultHostServer;
 			_fallbackHostServer = fallbackHostServer;
 			_queryServices = queryServices;
 
-			var operation = new HostPlayModeInitializationOperation(this, packageName);
+			var operation = new HostPlayModeInitializationOperation(this, packageName, packageVersion);
 			OperationSystem.StartOperation(operation);
 			return operation;
 		}
@@ -44,8 +46,8 @@ namespace YooAsset
 		}
 		private BundleInfo ConvertToDownloadInfo(PatchBundle patchBundle)
 		{
-			string remoteMainURL = GetRemoteMainURL(patchBundle.FileName);
-			string remoteFallbackURL = GetRemoteFallbackURL(patchBundle.FileName);
+			string remoteMainURL = GetRemoteMainURL(patchBundle.FileName, patchBundle.PackageName);
+			string remoteFallbackURL = GetRemoteFallbackURL(patchBundle.FileName, patchBundle.PackageName);
 			BundleInfo bundleInfo = new BundleInfo(patchBundle, BundleInfo.ELoadMode.LoadFromRemote, remoteMainURL, remoteFallbackURL);
 			return bundleInfo;
 		}
@@ -67,13 +69,13 @@ namespace YooAsset
 		}
 
 		#region IRemoteServices接口
-		public string GetRemoteMainURL(string fileName)
+		public string GetRemoteMainURL(string fileName, string packageName)
 		{
-			return $"{_defaultHostServer}/{fileName}";
+			return $"{_defaultHostServer}/{packageName}/{fileName}";
 		}
-		public string GetRemoteFallbackURL(string fileName)
+		public string GetRemoteFallbackURL(string fileName, string packageName)
 		{
-			return $"{_fallbackHostServer}/{fileName}";
+			return $"{_fallbackHostServer}/{packageName}/{fileName}";
 		}
 		#endregion
 
@@ -93,7 +95,7 @@ namespace YooAsset
 		}
 		public bool IsBuildinPatchBundle(PatchBundle patchBundle)
 		{
-			return _queryServices.QueryStreamingAssets(patchBundle.FileName);
+			return _queryServices.QueryStreamingAssets(patchBundle.PackageName, patchBundle.FileName);
 		}
 		public bool IsCachedPatchBundle(PatchBundle patchBundle)
 		{
@@ -102,7 +104,7 @@ namespace YooAsset
 		
 		UpdatePackageVersionOperation IPlayModeServices.UpdatePackageVersionAsync(bool appendTimeTicks, int timeout)
 		{
-			var operation = new HostPlayModeUpdatePackageVersionOperation(this, _packageName, appendTimeTicks, timeout);
+			var operation = new HostPlayModeUpdatePackageVersionOperation(this, _packageName, _packageVersion,appendTimeTicks, timeout);
 			OperationSystem.StartOperation(operation);
 			return operation;
 		}

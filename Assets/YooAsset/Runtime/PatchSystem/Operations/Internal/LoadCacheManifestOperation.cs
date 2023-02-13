@@ -45,7 +45,7 @@ namespace YooAsset
 			{
 				if (_queryCachePackageHashOp == null)
 				{
-					_queryCachePackageHashOp = new QueryCachePackageHashOperation(_packageName);
+					_queryCachePackageHashOp = new QueryCachePackageHashOperation(_packageName, _packageVersion);
 					OperationSystem.StartOperation(_queryCachePackageHashOp);
 				}
 
@@ -67,7 +67,7 @@ namespace YooAsset
 
 			if (_steps == ESteps.VerifyFileHash)
 			{
-				_manifestFilePath = PersistentHelper.GetCacheManifestFilePath(_packageName);
+				_manifestFilePath = PersistentHelper.GetCacheManifestFilePath(_packageName, _packageVersion);
 				if (File.Exists(_manifestFilePath) == false)
 				{
 					_steps = ESteps.Done;
@@ -77,13 +77,13 @@ namespace YooAsset
 					return;
 				}
 
-				string fileHash = HashUtility.FileMD5(_manifestFilePath);
-				if (fileHash != _queryCachePackageHashOp.PackageHash)
+				string fileHash = Crc32Helper.CalcHash(_manifestFilePath);
+				if (fileHash != _queryCachePackageHashOp.PackageHash.crc)
 				{
 					_steps = ESteps.Done;
 					Status = EOperationStatus.Failed;
 					Error = "Failed to verify cache manifest file hash !";
-					ClearCacheFile();
+					ClearCacheFile();    
 				}
 				else
 				{
@@ -131,7 +131,7 @@ namespace YooAsset
 				File.Delete(_manifestFilePath);
 			}
 
-			string hashFilePath = PersistentHelper.GetCachePackageVersionFilePath(_packageName);
+			string hashFilePath = PersistentHelper.GetCachePackageVersionFilePath(_packageName, _packageVersion);
 			if (File.Exists(hashFilePath))
 			{
 				File.Delete(hashFilePath);

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using AquaSys.Base;
+using System.IO;
 
 namespace YooAsset
 {
@@ -14,6 +15,7 @@ namespace YooAsset
 		private static int RequestCount = 0;
 		private readonly IRemoteServices _remoteServices;
 		private readonly string _packageName;
+		private readonly string _packageVersion;
 		private readonly bool _appendTimeTicks;
 		private readonly int _timeout;
 		private UnityWebDataRequester _downloader;
@@ -22,13 +24,14 @@ namespace YooAsset
 		/// <summary>
 		/// 包裹版本
 		/// </summary>
-		public string PackageVersion { private set; get; }
+		public YooAssetVersion PackageVersion { private set; get; }
 		
 
-		public QueryRemotePackageVersionOperation(IRemoteServices remoteServices, string packageName, bool appendTimeTicks, int timeout)
+		public QueryRemotePackageVersionOperation(IRemoteServices remoteServices, string packageName, string packageVersion, bool appendTimeTicks, int timeout)
 		{
 			_remoteServices = remoteServices;
 			_packageName = packageName;
+			_packageVersion = packageVersion;
 			_appendTimeTicks = appendTimeTicks;
 			_timeout = timeout;
 		}
@@ -46,8 +49,8 @@ namespace YooAsset
 			{
 				if (_downloader == null)
 				{
-					string fileName = YooAssetSettingsData.GetPackageVersionFileName(_packageName);
-					string webURL = GetPackageVersionRequestURL(fileName);
+					string fileName = YooAssetSettingsData.GetPackageVersionFileName(_packageName, _packageVersion);
+					string webURL = GetPackageVersionRequestURL(fileName, _packageName);
 					YooLogger.Log($"Beginning to request package version : {webURL}");
 					_downloader = new UnityWebDataRequester();
 					_downloader.SendRequest(webURL, _timeout);
@@ -65,8 +68,8 @@ namespace YooAsset
 				}
 				else
 				{
-					PackageVersion = _downloader.GetText();
-					if (string.IsNullOrEmpty(PackageVersion))
+					PackageVersion = StreamTools.DeserializeObject<YooAssetVersion> (_downloader.GetText());
+					if (PackageVersion==null)
 					{
 						_steps = ESteps.Done;
 						Status = EOperationStatus.Failed;
@@ -83,15 +86,15 @@ namespace YooAsset
 			}
 		}
 
-		private string GetPackageVersionRequestURL(string fileName)
+		private string GetPackageVersionRequestURL(string fileName, string packageName)
 		{
 			string url;
 
 			// 轮流返回请求地址
 			if (RequestCount % 2 == 0)
-				url = _remoteServices.GetRemoteFallbackURL(fileName);
+				url = _remoteServices.GetRemoteFallbackURL(fileName, packageName);
 			else
-				url = _remoteServices.GetRemoteMainURL(fileName);
+				url = _remoteServices.GetRemoteMainURL(fileName, packageName);
 
 			// 在URL末尾添加时间戳
 			if (_appendTimeTicks)

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using AquaSys.Base;
+using System.IO;
 
 namespace YooAsset
 {
@@ -18,12 +19,13 @@ namespace YooAsset
 		/// <summary>
 		/// 包裹哈希值
 		/// </summary>
-		public string PackageHash { private set; get; }
+		public YooAssetVersion PackageHash { private set; get; }
 
 
-		public QueryCachePackageHashOperation(string packageName)
+		public QueryCachePackageHashOperation(string packageName, string packageVersion)
 		{
 			_packageName = packageName;
+			_packageVersion = packageVersion;
 		}
 		internal override void Start()
 		{
@@ -36,7 +38,7 @@ namespace YooAsset
 
 			if (_steps == ESteps.LoadCachePackageHashFile)
 			{
-				string filePath = PersistentHelper.GetCachePackageVersionFilePath(_packageName);
+				string filePath = PersistentHelper.GetCachePackageVersionFilePath(_packageName, _packageVersion);
 				if (File.Exists(filePath) == false)
 				{
 					_steps = ESteps.Done;
@@ -45,8 +47,8 @@ namespace YooAsset
 					return;
 				}
 
-				PackageHash = FileUtility.ReadAllText(filePath);
-				if (string.IsNullOrEmpty(PackageHash))
+				PackageHash =StreamTools.DeserializeObject< YooAssetVersion > (FileUtility.ReadAllText(filePath));
+				if (PackageHash==null)
 				{
 					_steps = ESteps.Done;
 					Status = EOperationStatus.Failed;

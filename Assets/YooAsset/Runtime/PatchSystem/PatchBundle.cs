@@ -126,7 +126,7 @@ namespace YooAsset
 				if (string.IsNullOrEmpty(_streamingFilePath) == false)
 					return _streamingFilePath;
 
-				_streamingFilePath = PathHelper.MakeStreamingLoadPath(FileName);
+				_streamingFilePath = PathHelper.MakeStreamingLoadPath(FileName,PackageName);
 				return _streamingFilePath;
 			}
 		}

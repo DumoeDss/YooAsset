@@ -85,7 +85,7 @@ namespace YooAsset
 		/// 创建资源包
 		/// </summary>
 		/// <param name="packageName">资源包名称</param>
-		public static AssetsPackage CreateAssetsPackage(string packageName)
+		public static AssetsPackage CreateAssetsPackage(string packageName, string packageVersion)
 		{
 			if (_isInitialize == false)
 				throw new Exception($"{nameof(YooAssets)} not initialize !");
@@ -96,7 +96,7 @@ namespace YooAsset
 			if (HasAssetsPackage(packageName))
 				throw new Exception($"Package {packageName} already existed !");
 
-			AssetsPackage assetsPackage = new AssetsPackage(packageName);
+			AssetsPackage assetsPackage = new AssetsPackage(packageName, packageVersion);
 			_packages.Add(assetsPackage);
 			return assetsPackage;
 		}

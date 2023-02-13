@@ -85,15 +85,17 @@ namespace YooAsset
 
 		private readonly OfflinePlayModeImpl _impl;
 		private readonly string _packageName;
+		private readonly string _packageVersion;
 		private QueryBuildinPackageVersionOperation _queryBuildinPackageVersionOp;
 		private LoadBuildinManifestOperation _loadBuildinManifestOp;
 		private PackageCachingOperation _cachingOperation;
 		private ESteps _steps = ESteps.None;
 
-		internal OfflinePlayModeInitializationOperation(OfflinePlayModeImpl impl, string packageName)
+		internal OfflinePlayModeInitializationOperation(OfflinePlayModeImpl impl, string packageName, string packageVersion)
 		{
 			_impl = impl;
 			_packageName = packageName;
+			_packageVersion = packageVersion;
 		}
 		internal override void Start()
 		{
@@ -108,7 +110,7 @@ namespace YooAsset
 			{
 				if (_queryBuildinPackageVersionOp == null)
 				{
-					_queryBuildinPackageVersionOp = new QueryBuildinPackageVersionOperation(_packageName);
+					_queryBuildinPackageVersionOp = new QueryBuildinPackageVersionOperation(_packageName, _packageVersion);
 					OperationSystem.StartOperation(_queryBuildinPackageVersionOp);
 				}
 
@@ -131,7 +133,7 @@ namespace YooAsset
 			{
 				if (_loadBuildinManifestOp == null)
 				{
-					_loadBuildinManifestOp = new LoadBuildinManifestOperation(_packageName);
+					_loadBuildinManifestOp = new LoadBuildinManifestOperation(_packageName, _packageVersion);
 					OperationSystem.StartOperation(_loadBuildinManifestOp);
 				}
 
@@ -192,6 +194,7 @@ namespace YooAsset
 
 		private readonly HostPlayModeImpl _impl;
 		private readonly string _packageName;
+		private readonly string _packageVersion;
 		private QueryBuildinPackageVersionOperation _queryBuildinPackageVersionOp;
 		private QueryCachePackageVersionOperation _queryCachePackageVersionOp;
 		private UnpackBuildinManifestOperation _unpackBuildinManifestOp;
@@ -200,10 +203,11 @@ namespace YooAsset
 		private PackageCachingOperation _cachingOperation;
 		private ESteps _steps = ESteps.None;
 
-		internal HostPlayModeInitializationOperation(HostPlayModeImpl impl, string packageName)
+		internal HostPlayModeInitializationOperation(HostPlayModeImpl impl, string packageName,string packageVersion)
 		{
 			_impl = impl;
 			_packageName = packageName;
+			_packageVersion = packageVersion;
 		}
 		internal override void Start()
 		{
@@ -233,7 +237,7 @@ namespace YooAsset
 			{
 				if (_queryCachePackageVersionOp == null)
 				{
-					_queryCachePackageVersionOp = new QueryCachePackageVersionOperation(_packageName);
+					_queryCachePackageVersionOp = new QueryCachePackageVersionOperation(_packageName, _packageVersion);
 					OperationSystem.StartOperation(_queryCachePackageVersionOp);
 				}
 
@@ -254,7 +258,7 @@ namespace YooAsset
 			{
 				if (_loadCacheManifestOp == null)
 				{
-					_loadCacheManifestOp = new LoadCacheManifestOperation(_packageName, _queryCachePackageVersionOp.PackageVersion);
+					_loadCacheManifestOp = new LoadCacheManifestOperation(_packageName, _queryCachePackageVersionOp.PackageVersion.crc);
 					OperationSystem.StartOperation(_loadCacheManifestOp);
 				}
 
@@ -277,7 +281,7 @@ namespace YooAsset
 			{
 				if (_queryBuildinPackageVersionOp == null)
 				{
-					_queryBuildinPackageVersionOp = new QueryBuildinPackageVersionOperation(_packageName);
+					_queryBuildinPackageVersionOp = new QueryBuildinPackageVersionOperation(_packageName, _packageVersion);
 					OperationSystem.StartOperation(_queryBuildinPackageVersionOp);
 				}
 
@@ -301,7 +305,7 @@ namespace YooAsset
 			{
 				if (_unpackBuildinManifestOp == null)
 				{
-					_unpackBuildinManifestOp = new UnpackBuildinManifestOperation(_packageName);
+					_unpackBuildinManifestOp = new UnpackBuildinManifestOperation(_packageName, _packageVersion);
 					OperationSystem.StartOperation(_unpackBuildinManifestOp);
 				}
 
@@ -324,7 +328,7 @@ namespace YooAsset
 			{
 				if (_loadBuildinManifestOp == null)
 				{
-					_loadBuildinManifestOp = new LoadBuildinManifestOperation(_packageName);
+					_loadBuildinManifestOp = new LoadBuildinManifestOperation(_packageName, _packageVersion);
 					OperationSystem.StartOperation(_loadBuildinManifestOp);
 				}
 
