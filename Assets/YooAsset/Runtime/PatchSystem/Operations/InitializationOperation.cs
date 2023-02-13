@@ -281,7 +281,7 @@ namespace YooAsset
 			{
 				if (_queryBuildinPackageVersionOp == null)
 				{
-					_queryBuildinPackageVersionOp = new QueryBuildinPackageVersionOperation(_packageName, _packageVersion);
+					_queryBuildinPackageVersionOp = new QueryBuildinPackageVersionOperation(_packageName, "buildin");
 					OperationSystem.StartOperation(_queryBuildinPackageVersionOp);
 				}
 
@@ -305,7 +305,7 @@ namespace YooAsset
 			{
 				if (_unpackBuildinManifestOp == null)
 				{
-					_unpackBuildinManifestOp = new UnpackBuildinManifestOperation(_packageName, _packageVersion);
+					_unpackBuildinManifestOp = new UnpackBuildinManifestOperation(_packageName, "buildin");
 					OperationSystem.StartOperation(_unpackBuildinManifestOp);
 				}
 
@@ -328,7 +328,7 @@ namespace YooAsset
 			{
 				if (_loadBuildinManifestOp == null)
 				{
-					_loadBuildinManifestOp = new LoadBuildinManifestOperation(_packageName, _packageVersion);
+					_loadBuildinManifestOp = new LoadBuildinManifestOperation(_packageName, "buildin");
 					OperationSystem.StartOperation(_loadBuildinManifestOp);
 				}
 

@@ -49,10 +49,9 @@ namespace YooAsset.Editor
                 {
                     string sourcePath = $"{packageOutputDirectory}/{packageName}";
                     string destPath = $"{streamingAssetsDirectory}/{packageName}";
-                    EditorTools.CopyDirectory(sourcePath, destPath, "version");
-                    EditorTools.CopyDirectory(sourcePath, destPath, "bytes");
-                    EditorTools.CopyDirectory(sourcePath, destPath, "json");
-
+                    EditorTools.CopyDirectoryAndChangeBuildInManifest(sourcePath, destPath, "version");
+                    EditorTools.CopyDirectoryAndChangeBuildInManifest(sourcePath, destPath, "bytes");
+                    EditorTools.CopyDirectoryAndChangeBuildInManifest(sourcePath, destPath, "json");
                 }
 
                 // 拷贝文件列表（所有文件）

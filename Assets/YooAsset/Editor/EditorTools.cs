@@ -432,6 +432,29 @@ namespace YooAsset.Editor
 		}
 
 		/// <summary>
+		/// 拷贝文件夹
+		/// 注意：包括所有子目录的文件
+		/// </summary>
+		public static void CopyDirectoryAndChangeBuildInManifest(string sourcePath, string destPath, string extension)
+		{
+			sourcePath = EditorTools.GetRegularPath(sourcePath);
+
+			// If the destination directory doesn't exist, create it.
+			if (Directory.Exists(destPath) == false)
+				Directory.CreateDirectory(destPath);
+
+			string[] fileList = Directory.GetFiles(sourcePath, $"*.{extension}", SearchOption.AllDirectories);
+			foreach (string file in fileList)
+			{
+				string temp = EditorTools.GetRegularPath(file);
+				string savePath = temp.Replace(sourcePath, destPath);
+				var array = savePath.Split('_');
+				savePath = savePath.Replace(array[array.Length - 1], $"buildin.{extension}");
+				CopyFile(file, savePath, true);
+			}
+		}
+
+		/// <summary>
 		/// 拷贝文件
 		/// </summary>
 		public static void CopyFile(string sourcePath, string destPath, bool overwrite)
