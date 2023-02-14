@@ -122,9 +122,8 @@ internal class FsmInitialize : IStateNode
 	{
 		public bool QueryStreamingAssets(string packageName, string fileName)
 		{
-			// 注意：使用了BetterStreamingAssets插件，使用前需要初始化该插件！
 			string buildinFolderName = YooAssets.GetStreamingAssetBuildinFolderName();
-			return BetterStreamingAssets.FileExists($"{buildinFolderName}/{packageName}/{fileName}");
+			return StreamingAssetsHelper.FileExists($"{buildinFolderName}/{packageName}/{fileName}");
 		}
 	}
 
