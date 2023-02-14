@@ -17,32 +17,28 @@ public class StartUp : MonoBehaviour
 	private void Start()
     {
         InitApp();
-
-        //LoadingSceneManager.Instance.LoadSceneAsync(GlobalConfigs.UpdateScene, false);
     }
 
     public void InitApp()
     {
-		// ³õÊ¼»¯BetterStreaming
-		BetterStreamingAssets.Initialize();
 
-		// ³õÊ¼»¯ÊÂ¼şÏµÍ³
-		UniEvent.Initalize();
+        // åˆå§‹åŒ–äº‹ä»¶ç³»ç»Ÿ
+        UniEvent.Initalize();
 
-		// ³õÊ¼»¯¹ÜÀíÏµÍ³
-		UniModule.Initialize();
+        // åˆå§‹åŒ–ç®¡ç†ç³»ç»Ÿ
+        UniModule.Initialize();
 
-		// ³õÊ¼»¯×ÊÔ´ÏµÍ³
-		YooAssets.Initialize();
-		YooAssets.SetOperationSystemMaxTimeSlice(30);
+        // åˆå§‹åŒ–èµ„æºç³»ç»Ÿ
+        YooAssets.Initialize();
+        YooAssets.SetOperationSystemMaxTimeSlice(30);
 
-		UniModule.StartCoroutine(InitPackage());
+        UniModule.StartCoroutine(InitPackage());
 
     }
 
 	private IEnumerator InitPackage()
 	{
-		// ´´½¨Ä¬ÈÏµÄ×ÊÔ´°ü
+		// åˆ›å»ºé»˜è®¤çš„èµ„æºåŒ…
 		string packageName = "DefaultPackage";
 		var package = YooAssets.TryGetAssetsPackage(packageName);
 		if (package == null)
@@ -51,7 +47,7 @@ public class StartUp : MonoBehaviour
 			YooAssets.SetDefaultAssetsPackage(package);
 		}
 
-		// ±à¼­Æ÷ÏÂµÄÄ£ÄâÄ£Ê½
+		// ç¼–è¾‘å™¨ä¸‹çš„æ¨¡æ‹Ÿæ¨¡å¼
 		InitializationOperation initializationOperation = null;
 		if (playMode == EPlayMode.EditorSimulateMode)
 		{
@@ -60,7 +56,7 @@ public class StartUp : MonoBehaviour
 			initializationOperation = package.InitializeAsync(createParameters);
 		}
 
-		// µ¥»úÔËĞĞÄ£Ê½
+		// å•æœºè¿è¡Œæ¨¡å¼
 		if (playMode == EPlayMode.OfflinePlayMode)
 		{
 			var createParameters = new OfflinePlayModeParameters();
@@ -68,7 +64,7 @@ public class StartUp : MonoBehaviour
 			initializationOperation = package.InitializeAsync(createParameters);
 		}
 
-		// Áª»úÔËĞĞÄ£Ê½
+		// è”æœºè¿è¡Œæ¨¡å¼
 		if (playMode == EPlayMode.HostPlayMode)
 		{
 			var createParameters = new HostPlayModeParameters();
@@ -87,12 +83,11 @@ public class StartUp : MonoBehaviour
 		else
 		{
 			Debug.LogWarning($"{initializationOperation.Error}");
-			PatchEventDefine.InitializeFailed.SendEventMessage();
 		}
 	}
 
 	/// <summary>
-	/// »ñÈ¡×ÊÔ´·şÎñÆ÷µØÖ·
+	/// è·å–èµ„æºæœåŠ¡å™¨åœ°å€
 	/// </summary>
 	private string GetHostServerURL()
 	{
@@ -122,7 +117,6 @@ public class StartUp : MonoBehaviour
 		else
 		{
 			Debug.LogWarning(operation.Error);
-			PatchEventDefine.PackageVersionUpdateFailed.SendEventMessage();
 		}
 	}
 
@@ -138,7 +132,6 @@ public class StartUp : MonoBehaviour
 		else
 		{
 			Debug.LogWarning(operation.Error);
-			PatchEventDefine.PatchManifestUpdateFailed.SendEventMessage();
 		}
 	}
 
@@ -153,7 +146,6 @@ public class StartUp : MonoBehaviour
 		if (downloader.TotalDownloadCount == 0)
 		{
 			Debug.Log("Not found any download files !");
-			PatchEventDefine.PatchStatesChange.SendEventMessage("ÇåÀíÎ´Ê¹ÓÃµÄ»º´æÎÄ¼ş£¡");
 			var package = YooAsset.YooAssets.GetAssetsPackage("DefaultPackage");
 			var operation = package.ClearUnusedCacheFilesAsync();
 			operation.Completed += Operation_Completed;
@@ -161,26 +153,25 @@ public class StartUp : MonoBehaviour
 		else
 		{
 			//A total of 10 files were found that need to be downloaded
-			Debug.Log($"Found total {downloader.TotalDownloadCount} files that need download £¡");
+			Debug.Log($"Found total {downloader.TotalDownloadCount} files that need download ï¼");
 
-			// ·¢ÏÖĞÂ¸üĞÂÎÄ¼şºó£¬¹ÒÆğÁ÷³ÌÏµÍ³
-			// ×¢Òâ£º¿ª·¢ÕßĞèÒªÔÚÏÂÔØÇ°¼ì²â´ÅÅÌ¿Õ¼ä²»×ã
+			// å‘ç°æ–°æ›´æ–°æ–‡ä»¶åï¼ŒæŒ‚èµ·æµç¨‹ç³»ç»Ÿ
+			// æ³¨æ„ï¼šå¼€å‘è€…éœ€è¦åœ¨ä¸‹è½½å‰æ£€æµ‹ç£ç›˜ç©ºé—´ä¸è¶³
 			int totalDownloadCount = downloader.TotalDownloadCount;
 			long totalDownloadBytes = downloader.TotalDownloadBytes;
-			PatchEventDefine.FoundUpdateFiles.SendEventMessage(totalDownloadCount, totalDownloadBytes);
 			UniModule.StartCoroutine(BeginDownload(downloader));
 		}
 	}
 
 	private IEnumerator BeginDownload(PatchDownloaderOperation downloader)
 	{
-		// ×¢²áÏÂÔØ»Øµ÷
-		downloader.OnDownloadErrorCallback = PatchEventDefine.WebFileDownloadFailed.SendEventMessage;
-		downloader.OnDownloadProgressCallback = PatchEventDefine.DownloadProgressUpdate.SendEventMessage;
+		// æ³¨å†Œä¸‹è½½å›è°ƒ
+		//downloader.OnDownloadErrorCallback = PatchEventDefine.WebFileDownloadFailed.SendEventMessage;
+		//downloader.OnDownloadProgressCallback = PatchEventDefine.DownloadProgressUpdate.SendEventMessage;
 		downloader.BeginDownload();
 		yield return downloader;
 
-		// ¼ì²âÏÂÔØ½á¹û
+		// æ£€æµ‹ä¸‹è½½ç»“æœ
 		if (downloader.Status != EOperationStatus.Succeed)
 			yield break;
 
@@ -189,32 +180,30 @@ public class StartUp : MonoBehaviour
 
 	private void Operation_Completed(YooAsset.AsyncOperationBase obj)
 	{
-		PatchEventDefine.PatchStatesChange.SendEventMessage("¿ªÊ¼ÓÎÏ·£¡");
+        // åˆ›å»ºæ¸¸æˆç®¡ç†å™¨
+        UniModule.CreateModule<GameManager>();
 
-		// ´´½¨ÓÎÏ·¹ÜÀíÆ÷
-		UniModule.CreateModule<GameManager>();
-
-		// ¿ªÆôÓÎÏ·Á÷³Ì
-		GameManager.Instance.Run();
-	}
+        // å¼€å¯æ¸¸æˆæµç¨‹
+        GameManager.Instance.Run();
+    }
 
 	/// <summary>
-	/// ÄÚÖÃÎÄ¼ş²éÑ¯·şÎñÀà
+	/// å†…ç½®æ–‡ä»¶æŸ¥è¯¢æœåŠ¡ç±»
 	/// </summary>
 	private class GameQueryServices : IQueryServices
 	{
 		public bool QueryStreamingAssets(string packageName, string fileName)
 		{
-			// ×¢Òâ£ºÊ¹ÓÃÁËBetterStreamingAssets²å¼ş£¬Ê¹ÓÃÇ°ĞèÒª³õÊ¼»¯¸Ã²å¼ş£¡
+			// æ³¨æ„ï¼šä½¿ç”¨äº†BetterStreamingAssetsæ’ä»¶ï¼Œä½¿ç”¨å‰éœ€è¦åˆå§‹åŒ–è¯¥æ’ä»¶ï¼
 			string buildinFolderName = YooAssets.GetStreamingAssetBuildinFolderName();
-			var exist = BetterStreamingAssets.FileExists($"{buildinFolderName}/{packageName}/{fileName}");
-			Debug.Log($"{buildinFolderName}/{packageName}/{fileName} exist : {exist}");
-			return exist;
-		}
+            var exist = StreamingAssetsHelper.FileExists($"{buildinFolderName}/{packageName}/{fileName}");
+            Debug.Log($"{buildinFolderName}/{packageName}/{fileName} exist : {exist}");
+            return exist;
+        }
 	}
 
 	/// <summary>
-	/// ×ÊÔ´ÎÄ¼ş½âÃÜ·şÎñÀà
+	/// èµ„æºæ–‡ä»¶è§£å¯†æœåŠ¡ç±»
 	/// </summary>
 	private class GameDecryptionServices : IDecryptionServices
 	{
@@ -230,7 +219,7 @@ public class StartUp : MonoBehaviour
 
 		public FileStream LoadFromStream(DecryptFileInfo fileInfo)
 		{
-			BundleStream bundleStream = new BundleStream(fileInfo.FilePath, FileMode.Open);
+			FileStream bundleStream = new FileStream(fileInfo.FilePath, FileMode.Open);
 			return bundleStream;
 		}
 

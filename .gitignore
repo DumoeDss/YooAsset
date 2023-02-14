@@ -21,6 +21,7 @@
 
 # Visual Studio cache directory
 .vs/
+.vsconfig
 
 # Gradle cache directory
 .gradle/
@@ -54,8 +55,46 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+*.unitypackage.meta
 
 # Crashlytics generated file
 crashlytics-build.properties
 
 *.vsconfig
+
+# YooAssets
+/[Bb]undles/
+/Sandbox/
+
+# HybridCLR
+/Build-Release
+/Build-Win64
+/Build-Android
+/copydll.bat
+/Debug
+/update_unity_libil2cpp.bat
+/Build-Win64-2
+/Build-Android2
+/Build-Android-2020.3.33
+/Build-Win64-2020.3.33
+/Build-Win64-2021.3.1
+/UserSettings/Layouts
+/Build-Android-2021.3.1
+/Release
+/HybridCLRData/
+/Release-Win64
+/Build-Android64
+/Build-AndroidV7
+/Assets/HybridCLRBuildCache
+/Assets/HybridCLRBuildCache.meta
+/Release-Android
+/Release-Win32
+/Build-WebGL
+/Assembly-CSharp-Editor.csproj.user
+/Build-AndroidV8
+Build-Mac
+/Build-iOS
+/HybridCLRData
+/Packages/com.focus-creative-games.hybridclr_unity
+/Assets/StreamingAssets
+/Assets/StreamingAssets.meta
