@@ -17,7 +17,7 @@ public class PatchManager : ModuleSingleton<PatchManager>, IModule
 	/// <summary>
 	/// 包裹的版本信息
 	/// </summary>
-	public string PackageVersion { set; get; }
+	public YooAssetVersion PackageVersion { set; get; }
 
 	/// <summary>
 	/// 下载器

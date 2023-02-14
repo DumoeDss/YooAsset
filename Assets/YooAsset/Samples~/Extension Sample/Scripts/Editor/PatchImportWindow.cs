@@ -66,7 +66,7 @@ namespace YooAsset.Editor
 				EditorTools.CopyFile(sourcePath, destPath, true);
 			}
 			{
-				string fileName = YooAssetSettingsData.GetPackageVersionFileName(patchManifest.PackageName);
+				string fileName = YooAssetSettingsData.GetPackageVersionFileName(patchManifest.PackageName, manifestFileName.Split('_')[2]);
 				string sourcePath = $"{outputDirectory}/{fileName}";
 				string destPath = $"{AssetBundleBuilderHelper.GetStreamingAssetsFolderPath()}/{fileName}";
 				EditorTools.CopyFile(sourcePath, destPath, true);

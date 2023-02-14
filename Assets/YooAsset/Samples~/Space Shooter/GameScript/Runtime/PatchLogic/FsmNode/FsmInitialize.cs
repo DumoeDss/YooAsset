@@ -41,7 +41,7 @@ internal class FsmInitialize : IStateNode
 		var package = YooAssets.TryGetAssetsPackage(packageName);
 		if (package == null)
 		{
-			package = YooAssets.CreateAssetsPackage(packageName);
+			package = YooAssets.CreateAssetsPackage(packageName,"");
 			YooAssets.SetDefaultAssetsPackage(package);
 		}
 
@@ -120,11 +120,11 @@ internal class FsmInitialize : IStateNode
 	/// </summary>
 	private class GameQueryServices : IQueryServices
 	{
-		public bool QueryStreamingAssets(string fileName)
+		public bool QueryStreamingAssets(string packageName, string fileName)
 		{
 			// 注意：使用了BetterStreamingAssets插件，使用前需要初始化该插件！
 			string buildinFolderName = YooAssets.GetStreamingAssetBuildinFolderName();
-			return BetterStreamingAssets.FileExists($"{buildinFolderName}/{fileName}");
+			return BetterStreamingAssets.FileExists($"{buildinFolderName}/{packageName}/{fileName}");
 		}
 	}
 
