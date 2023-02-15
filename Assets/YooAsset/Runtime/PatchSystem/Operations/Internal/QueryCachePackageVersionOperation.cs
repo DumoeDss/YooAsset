@@ -1,4 +1,4 @@
-﻿using AquaSys.Base;
+﻿using AquaSys.Tools;
 using System.IO;
 
 namespace YooAsset
@@ -47,7 +47,7 @@ namespace YooAsset
 					return;
 				}
 
-				PackageVersion =StreamTools.DeserializeObjectFromFilePath<YooAssetVersion>(filePath);
+				PackageVersion = StreamTools.DeserializeObjectFromFilePath<YooAssetVersion>(filePath);
 				if (PackageVersion==null)
 				{
 					_steps = ESteps.Done;

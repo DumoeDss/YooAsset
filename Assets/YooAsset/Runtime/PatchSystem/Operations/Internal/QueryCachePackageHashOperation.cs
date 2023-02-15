@@ -1,4 +1,4 @@
-﻿using AquaSys.Base;
+﻿using AquaSys.Tools;
 using System.IO;
 
 namespace YooAsset
@@ -47,7 +47,7 @@ namespace YooAsset
 					return;
 				}
 
-				PackageHash =StreamTools.DeserializeObject< YooAssetVersion > (FileUtility.ReadAllText(filePath));
+				PackageHash = StreamTools.DeserializeObject<YooAssetVersion>(FileUtility.ReadAllText(filePath));
 				if (PackageHash==null)
 				{
 					_steps = ESteps.Done;

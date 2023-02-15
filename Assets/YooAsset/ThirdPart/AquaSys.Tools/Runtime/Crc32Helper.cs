@@ -1,9 +1,9 @@
 ﻿using Force.Crc32;
 using System.IO;
 using System.Text;
-namespace YooAsset
+namespace AquaSys.Tools
 {
-    internal class Crc32Helper
+    public class Crc32Helper
     {
         public static string CalcHash(string filePath)
         {

@@ -6,7 +6,7 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using UnityEngine;
-namespace AquaSys.Base
+namespace AquaSys.Tools
 {
     public static class StreamTools
     {
