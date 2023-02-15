@@ -14,9 +14,9 @@ namespace HybridCLR.Extension.Editor
     {
         public static string ProjectDir => Directory.GetParent(Application.dataPath).ToString();
 
-        public static string HybridCLRBuildCacheDir => Application.dataPath + "/HybridCLRBuildCache";
+        public static string HybridCLRBuildCacheDir => $"{Application.dataPath}/{SettingsUtil.HotUpdateDllsRootOutputDir}"; 
 
-        public static string AssembliesTempDir => $"{HybridCLRBuildCacheDir}/Assemblies";
+        public static string AssembliesTempDir => $"{HybridCLRBuildCacheDir}";
 
         public static string GetOriginBuildStripAssembliesDir(BuildTarget target)
         {
@@ -51,7 +51,7 @@ namespace HybridCLR.Extension.Editor
 
         public static string GetAssembliesTempDirTempDirByTarget(BuildTarget target)
         {
-            return $"{AssembliesTempDir}";
+            return $"{AssembliesTempDir}/{target}";
         }
 
         public static List<string> AOTMetaDlls
