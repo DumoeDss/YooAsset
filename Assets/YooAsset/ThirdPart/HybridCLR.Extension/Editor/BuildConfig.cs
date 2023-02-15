@@ -51,7 +51,7 @@ namespace HybridCLR.Extension.Editor
 
         public static string GetAssembliesTempDirTempDirByTarget(BuildTarget target)
         {
-            return $"{AssembliesTempDir}/{target}";
+            return $"{AssembliesTempDir}";
         }
 
         public static List<string> AOTMetaDlls
