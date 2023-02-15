@@ -111,12 +111,12 @@ namespace YooAsset.Editor
                 notSceneAssets.Add(dllBytesPath);
             }
 
-            AppDataConfigs appDataConfigs = AssetDatabase.LoadAssetAtPath<AppDataConfigs>(
+            AppInitDataConfigs appDataConfigs = AssetDatabase.LoadAssetAtPath<AppInitDataConfigs>(
                 "Assets/DataConfigs/AppDataConfigs.asset");
-            appDataConfigs.aotDllList = new List<string>();
+            appDataConfigs.AotDllList = new List<string>();
             foreach (var item in BuildConfig.AOTMetaDlls)
             {
-                appDataConfigs.aotDllList.Add("aot/" + item + ".bytes");
+                appDataConfigs.AotDllList.Add("aot/" + item + ".bytes");
             }
             EditorUtility.SetDirty(appDataConfigs);
             AssetDatabase.Refresh();
