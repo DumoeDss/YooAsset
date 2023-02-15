@@ -3,6 +3,13 @@ using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UnityEngine;
+using Cysharp.Threading.Tasks;
+using System.IO;
+using AquaSys.Patch.Encryption;
+#if CodeStage
+using CodeStage.AntiCheat.Storage;
+#endif
 
 namespace YooAsset
 {
@@ -785,39 +792,29 @@ namespace YooAsset
 
 		bool isAssemblyLoaded;
 		#region 加载脚本
-//		public async UniTask LoadAssembly()
-//		{
-//#if !UNITY_EDITOR
-//            if (!isAssemblyLoaded)
-//            {
-//				foreach (var assemblyAddress in _hostPlayModeImpl.LocalPatchManifest.AssemblyAddresses)
-//				{
-//					var handle = LoadAssetAsync<TextAsset>(assemblyAddress);
-//					await handle.ToUniTask();
-//					TextAsset textAsset = handle.AssetObject as TextAsset;
-//					var deviceLockSettings = new DeviceLockSettings(DeviceLockLevel.None);
-//					var encryptionSettings = new EncryptionSettings("uhLjaX5yqdB9mUV");
-//					var settings = new ObscuredFileSettings(encryptionSettings, deviceLockSettings);
-
-//					using (MemoryStream ms = new MemoryStream(textAsset.bytes))
-//					{
-//						ObscuredFile obscuredFile = new ObscuredFile(settings);
-//						var result = obscuredFile.ReadAllBytes(ms);
-//						if (result.Success)
-//						{
-//							var dllBytes = result.Data;
-//							System.Reflection.Assembly.Load(dllBytes);
-//                        }
-//                        else
-//                        {
-//							UnityEngine.Debug.LogError(result.Error);
-//                        }
-//					}
-//				}
-//				isAssemblyLoaded = true;
-//            }
-//#endif
-//		}
+		public async UniTask LoadAssembly()
+		{
+#if !UNITY_EDITOR
+			if (!isAssemblyLoaded)
+			{
+				foreach (var assemblyAddress in _playModeServices.ActiveManifest.AssemblyAddresses)
+				{
+					var handle = LoadAssetAsync<TextAsset>(assemblyAddress);
+					await handle;
+					TextAsset textAsset = handle.AssetObject as TextAsset;
+					var datas = textAsset.bytes;
+					using (MemoryStream ms = new MemoryStream(datas))
+					{
+						var dllBytes = AESEncrypt.Decrypt(ms, "hotfix");
+						System.Reflection.Assembly.Load(dllBytes);
+					}
+					Array.Clear(datas,0, datas.Length);
+					handle.Release();
+				}
+				isAssemblyLoaded = true;
+			}
+#endif
+		}
 		#endregion
 	}
 }

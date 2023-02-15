@@ -9,7 +9,8 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 using UnityEditor;
-using HybridCLR;
+using HybridCLR.Editor;
+using HybridCLR.Extension.Editor;
 
 namespace YooAsset.Editor
 {

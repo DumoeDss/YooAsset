@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace YooAsset
 {
@@ -85,26 +86,36 @@ namespace YooAsset
 					YooLogger.Log($"Package verify elapsed time {costTime:f1} seconds");
 				}
 
-				for (int i = _waitingList.Count - 1; i >= 0; i--)
+				Parallel.ForEach(_waitingList, verifyInfo =>
 				{
-					if (OperationSystem.IsBusy)
-						break;
-
-					if (_verifyingList.Count >= _verifyMaxNum)
-						break;
-
-					var element = _waitingList[i];
-					if (BeginVerifyFileWithThread(element))
+					_syncContext.Post(v =>
 					{
-						_waitingList.RemoveAt(i);
-						_verifyingList.Add(element);
-					}
-					else
-					{
-						YooLogger.Warning("The thread pool is failed queued.");
-						break;
-					}
-				}
+						_verifyingList.Add(verifyInfo);
+					}, verifyInfo);
+					VerifyInThread(verifyInfo);
+				});
+				_waitingList.Clear();
+
+				//for (int i = _waitingList.Count - 1; i >= 0; i--)
+				//{
+				//	if (OperationSystem.IsBusy)
+				//		break;
+
+				//	if (_verifyingList.Count >= _verifyMaxNum)
+				//		break;
+
+				//	var element = _waitingList[i];
+				//	if (BeginVerifyFileWithThread(element))
+				//	{
+				//		_waitingList.RemoveAt(i);
+				//		_verifyingList.Add(element);
+				//	}
+				//	else
+				//	{
+				//		YooLogger.Warning("The thread pool is failed queued.");
+				//		break;
+				//	}
+				//}
 			}
 		}
 

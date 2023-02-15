@@ -5,8 +5,11 @@
         "YooAsset",
         "Unity.ScriptableBuildPipeline",
         "Unity.ScriptableBuildPipeline.Editor",
-        "HybridCLR.Editor.Extension",
-        "AquaSys.Base"
+        "AquaSys.Base",
+        "HybridCLR.Extension.Editor",
+        "HybridCLR.Extension.Runtime",
+        "HybridCLR.Editor",
+        "AquaSys.Patch.Encryption"
     ],
     "includePlatforms": [
         "Editor"

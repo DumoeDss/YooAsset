@@ -1,11 +1,7 @@
 {
-    "name": "YooAsset",
+    "name": "AquaSys.Patch.Encryption",
     "rootNamespace": "",
-    "references": [
-        "GUID:98838e7477d3c2f4ab05835e08856e3c",
-        "GUID:7397f43e0b1a3d847937b93cedfc7a42",
-        "GUID:f51ebe6a0ceec4240a699833d6309b23"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

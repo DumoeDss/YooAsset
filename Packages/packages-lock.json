@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.cysharp.unitask": {
+      "version": "https://github.com/DumoeDss/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask#for_yooasset",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "4aaf5e3a13f6c601f985066939083bfa50a898fc"
+    },
     "com.focus-creative-games.hybridclr_unity": {
       "version": "https://gitee.com/focus-creative-games/hybridclr_unity.git#main",
       "depth": 0,
