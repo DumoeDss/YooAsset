@@ -1,9 +1,7 @@
 {
     "name": "AquaSys.Base",
     "rootNamespace": "",
-    "references": [
-        "GUID:33661e06c33d31b4c9223810bf503247"
-    ],
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
