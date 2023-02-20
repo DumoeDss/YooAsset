@@ -47,7 +47,7 @@ namespace YooAsset.Editor
 		/// </summary>
 		public string BundleName { private set; get; }
 
-		public string Package { private set; get; }
+		public string PackageName { private set; get; }
 
 		public bool IncludeInBuild { private set; get; }
 
@@ -139,7 +139,7 @@ namespace YooAsset.Editor
 		public BuildBundleInfo(string bundleName, string package, bool includeInBuild)
 		{
 			BundleName = bundleName;
-			Package = package;
+			PackageName = package;
 			IncludeInBuild = includeInBuild;
 		}
 

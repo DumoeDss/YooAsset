@@ -123,8 +123,8 @@ namespace YooAsset.Editor
 			{
 				if (packageNames.Contains(package.PackageName))
 				{
-					CollectCommand command = new CollectCommand(buildMode, EnableAddressable);
-					CollectResult collectResult = new CollectResult(package.PackageName, EnableAddressable, UniqueBundleName);
+					CollectCommand command = new CollectCommand(buildMode, package.PackageName, EnableAddressable, UniqueBundleName);
+					CollectResult collectResult = new CollectResult(command);
 					collectResult.SetCollectAssets(package.GetAllCollectAssets(command));
 					collectResultList.Add(collectResult);
 				}

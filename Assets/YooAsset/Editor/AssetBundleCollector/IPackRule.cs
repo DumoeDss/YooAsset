@@ -49,14 +49,15 @@ namespace YooAsset.Editor
 		/// <summary>
 		/// 获取共享资源包全名称
 		/// </summary>
-		public string GetShareBundleName(string packageName, bool uniqueBundleName)
+		public string GetShareBundleName(string packageName, string prefix, bool uniqueBundleName)
 		{
 			string fullName;
 			string bundleName = EditorTools.GetRegularPath(_bundleName).Replace('/', '_').Replace('.', '_').ToLower();
 			if (uniqueBundleName)
-				fullName = $"{packageName}_share_{bundleName}.{_bundleExtension}";
+				fullName = $"{packageName}_{prefix}_{bundleName}.{_bundleExtension}";
 			else
-				fullName = $"share_{bundleName}.{_bundleExtension}";
+				fullName = $"{prefix}_{bundleName}.{_bundleExtension}";
+
 			return fullName.ToLower();
 		}
 	}

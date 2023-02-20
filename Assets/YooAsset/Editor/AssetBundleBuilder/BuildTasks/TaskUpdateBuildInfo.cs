@@ -33,7 +33,8 @@ namespace YooAsset.Editor
 				if (bundleInfo.IsEncryptedFile)
 					bundleInfo.PatchInfo.BuildOutputFilePath = bundleInfo.EncryptedFilePath;
 				else
-					bundleInfo.PatchInfo.BuildOutputFilePath = $"{pipelineOutputDirectory}/{bundleInfo.BundleName}";
+					bundleInfo.PatchInfo.BuildOutputFilePath = $"{ pipelineOutputDirectory}/{bundleInfo.BundleName}";
+				// $"{pipelineOutputDirectory}/{bundleInfo.PackageName}/{bundleInfo.BundleName}";
 			}
 
 			// 3.更新文件其它信息
@@ -51,6 +52,7 @@ namespace YooAsset.Editor
 			{
 				string patchFileExtension = PatchManifestTools.GetRemoteBundleFileExtension(bundleInfo.BundleName);
 				string patchFileName = PatchManifestTools.GetRemoteBundleFileName(outputNameStyle, bundleInfo.BundleName, patchFileExtension, bundleInfo.PatchInfo.PatchFileHash);
+				UnityEngine.Debug.Log($"{patchFileName}: {bundleInfo.PatchInfo.PatchFileCRC}");
 				bundleInfo.PatchInfo.PatchOutputFilePath = $"{packageOutputDirectory}/{patchFileName}";
 			}
 		}

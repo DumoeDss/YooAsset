@@ -30,6 +30,33 @@ namespace YooAsset.Editor
 			string packageOutputDirectory = buildParametersContext.GetPackageOutputDirectory();
 			BuildRunner.Log($"开始拷贝补丁文件到补丁包目录：{packageOutputDirectory}");
 
+		
+
+			foreach (var PatchManifest in patchManifestContext.PatchManifests)
+			{
+				var package = PatchManifest.Key.Split('_')[1];
+				string dir = $"{packageOutputDirectory}/{package}";
+
+				// 拷贝所有补丁文件
+				int progressValue = 0;
+				PatchManifest patchManifest = PatchManifest.Value;
+				int patchFileTotalCount = patchManifest.BundleList.Count;
+				foreach (var patchBundle in patchManifest.BundleList)
+				{
+					var bundleInfo = buildMapContext.BundleInfos.Find(_ => _.BundleName == patchBundle.BundleName);
+					//EditorTools.CopyFile(bundleInfo.PatchInfo.BuildOutputFilePath, bundleInfo.PatchInfo.PatchOutputFilePath, true);
+
+					string sourcePath = bundleInfo.PatchInfo.BuildOutputFilePath;//$"{packageOutputDirectory}/{YooAssetSettings.OutputFolderName}/{patchBundle.BundleName}";
+					var fileNames = patchBundle.BundleName.Split('.');
+					var extension = $".{fileNames[fileNames.Length - 1]}";
+					var fileName = patchBundle.BundleName.Replace(extension, $"_{patchBundle.FileHash}{extension}");
+					string destPath = $"{dir}/{fileName}";
+					EditorTools.CopyFile(sourcePath, destPath, true);
+
+					EditorTools.DisplayProgressBar("拷贝补丁文件", ++progressValue, patchFileTotalCount);
+				}
+			}
+
 			if (buildParameters.BuildPipeline == EBuildPipeline.ScriptableBuildPipeline)
 			{
 				// 拷贝构建日志
@@ -60,27 +87,6 @@ namespace YooAsset.Editor
 			else
 			{
 				throw new System.NotImplementedException();
-			}
-
-			foreach (var PatchManifest in patchManifestContext.PatchManifests)
-			{
-				var package = PatchManifest.Key.Split('_')[1];
-				string dir = $"{packageOutputDirectory}/{package}";
-
-				// 拷贝所有补丁文件
-				int progressValue = 0;
-				PatchManifest patchManifest = PatchManifest.Value;
-				int patchFileTotalCount = patchManifest.BundleList.Count;
-				foreach (var patchBundle in patchManifest.BundleList)
-				{
-					string sourcePath = $"{packageOutputDirectory}/{YooAssetSettings.OutputFolderName}/{patchBundle.BundleName}";
-					var fileNames = patchBundle.BundleName.Split('.');
-					var extension = $".{fileNames[fileNames.Length - 1]}";
-					var fileName = patchBundle.BundleName.Replace(extension, $"_{patchBundle.FileHash}{extension}");
-					string destPath = $"{dir}/{fileName}";
-					EditorTools.CopyFile(sourcePath, destPath, true);
-					EditorTools.DisplayProgressBar("拷贝补丁文件", ++progressValue, patchFileTotalCount);
-				}
 			}
 
 			EditorTools.ClearProgressBar();

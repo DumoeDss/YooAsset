@@ -13,12 +13,13 @@ namespace YooAsset.Editor
 		{
 			var buildParametersContext = context.GetContextObject<BuildParametersContext>();
 			var patchManifestContext = context.GetContextObject<PatchManifestContext>();
-			var buildMode = buildParametersContext.Parameters.BuildMode;
+            var buildMapContext = context.GetContextObject<BuildMapContext>();
+            var buildMode = buildParametersContext.Parameters.BuildMode;
 			if (buildMode == EBuildMode.ForceRebuild || buildMode == EBuildMode.IncrementalBuild)
 			{
 				if (buildParametersContext.Parameters.CopyBuildinFileOption != ECopyBuildinFileOption.None)
 				{
-					CopyBuildinFilesToStreaming(buildParametersContext, patchManifestContext);
+					CopyBuildinFilesToStreaming(buildParametersContext, buildMapContext, patchManifestContext);
 				}
 			}
 		}
@@ -26,7 +27,7 @@ namespace YooAsset.Editor
 		/// <summary>
 		/// 拷贝首包资源文件
 		/// </summary>
-		private void CopyBuildinFilesToStreaming(BuildParametersContext buildParametersContext, PatchManifestContext patchManifestContext)
+		private void CopyBuildinFilesToStreaming(BuildParametersContext buildParametersContext, BuildMapContext buildMapContext, PatchManifestContext patchManifestContext)
 		{
             ECopyBuildinFileOption option = buildParametersContext.Parameters.CopyBuildinFileOption;
             string packageOutputDirectory = buildParametersContext.GetPackageOutputDirectory();
@@ -59,6 +60,8 @@ namespace YooAsset.Editor
                 {
                     foreach (var patchBundle in patchManifest.BundleList)
                     {
+                        var bundleInfo = buildMapContext.BundleInfos.Find(_=>_.BundleName == patchBundle.BundleName);
+                        //string sourcePath = bundleInfo.PatchInfo.BuildOutputFilePath;
                         string sourcePath = $"{packageOutputDirectory}/{packageName}/{patchBundle.FileName}";
                         string destPath = $"{streamingAssetsDirectory}/{packageName}/{patchBundle.FileName}";
                         EditorTools.CopyFile(sourcePath, destPath, true);
@@ -74,6 +77,8 @@ namespace YooAsset.Editor
                         if (patchBundle.HasTag(tags) == false)
                             continue;
                         string sourcePath = $"{packageOutputDirectory}/{packageName}/{patchBundle.FileName}";
+                        var bundleInfo = buildMapContext.BundleInfos.Find(_ => _.BundleName == patchBundle.BundleName);
+                        //string sourcePath = bundleInfo.PatchInfo.BuildOutputFilePath;
                         string destPath = $"{streamingAssetsDirectory}/{packageName}/{patchBundle.FileName}";
                         EditorTools.CopyFile(sourcePath, destPath, true);
                     }

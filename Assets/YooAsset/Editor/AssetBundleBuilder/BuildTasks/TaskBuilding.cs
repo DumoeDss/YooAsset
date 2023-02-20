@@ -63,7 +63,7 @@ namespace YooAsset.Editor
 			{
 				if (bundleInfo.IsRawFile)
 				{
-					string dest = $"{pipelineOutputDirectory}/{bundleInfo.Package}/{bundleInfo.BundleName}";
+					string dest = $"{pipelineOutputDirectory}/{bundleInfo.PackageName}/{bundleInfo.BundleName}";
 					foreach (var buildAsset in bundleInfo.BuildinAssets)
 					{
 						if (buildAsset.IsRawAsset)
