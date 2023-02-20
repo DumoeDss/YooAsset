@@ -14,11 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BuildPipeline: 0
   BuildMode: 0
-  BuildPackage:
-  - DefaultPackage
-  - PatchPackage
+  BuildPackage: []
   CompressOption: 2
-  OutputNameStyle: 4
-  CopyBuildinFileOption: 1
+  OutputNameStyle: 1
+  CopyBuildinFileOption: 0
   CopyBuildinFileTags: 
-  EncyptionClassName: FileStreamEncryption
+  EncyptionClassName: 

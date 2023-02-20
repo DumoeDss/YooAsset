@@ -219,7 +219,7 @@ public class StartUp : MonoBehaviour
 
 		public FileStream LoadFromStream(DecryptFileInfo fileInfo)
 		{
-			FileStream bundleStream = new FileStream(fileInfo.FilePath, FileMode.Open);
+			BundleStream bundleStream = new BundleStream(fileInfo.FilePath, FileMode.Open);
 			return bundleStream;
 		}
 
