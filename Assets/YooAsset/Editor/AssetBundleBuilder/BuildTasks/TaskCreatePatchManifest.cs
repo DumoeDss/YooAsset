@@ -10,7 +10,6 @@ using System.Reflection;
 using UnityEngine;
 using UnityEditor;
 using HybridCLR.Editor;
-using HybridCLR.Extension.Editor;
 using AquaSys.Tools;
 
 namespace YooAsset.Editor
@@ -71,7 +70,7 @@ namespace YooAsset.Editor
 					assemblyBundlesDict[patchBundlePair.Key] = new List<string>();
 				assemblyBundlesDict[patchBundlePair.Key].AddRange(assemblyNameList);
 			}
-
+			var assembliesContext = context.GetContextObject<AssembliesContext>();
 			foreach (var patchBundlePair in patchBundleDic)
             {
 				var packageName = patchBundlePair.Key;
@@ -96,11 +95,11 @@ namespace YooAsset.Editor
                     for (int i = 0; i < assemblyBundlesDict[patchManifest.PackageName].Count; i++)
                     {
                         var currentAssemblyName = assemblyBundlesDict[patchManifest.PackageName][i];
-                        //加载Assembly,查看依赖
-                        var dllBytes = File.ReadAllBytes(
-                            BuildConfig.GetHotFixDllsOutputDirByTarget(EditorUserBuildSettings.activeBuildTarget) +
-                            "/" + currentAssemblyName
-                            );
+						//加载Assembly,查看依赖
+						var packageFolder = patchManifest.PackageName == SettingsUtil.HybridCLRSettings.defaultPackageName ? "HotUpdata" : patchManifest.PackageName;
+
+						var dllBytes = File.ReadAllBytes(
+							$"{assembliesContext.hotUpdateRootDir}/{packageFolder}/{assembliesContext.platform}/{currentAssemblyName}");
 
                         var tempAssembly = Assembly.Load(dllBytes);
                         var assemblyNames = tempAssembly.GetReferencedAssemblies();

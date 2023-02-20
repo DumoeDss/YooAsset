@@ -8,11 +8,11 @@
       "hash": "4aaf5e3a13f6c601f985066939083bfa50a898fc"
     },
     "com.focus-creative-games.hybridclr_unity": {
-      "version": "https://gitee.com/focus-creative-games/hybridclr_unity.git#main",
+      "version": "https://github.com/DumoeDss/hybridclr_unity.git#for_aqua_patch",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "ff93f30a690b39a1c2bd70fd057d1b9f52fa05df"
+      "hash": "042819096ff7bfe65533cca127a3b0d258506c7f"
     },
     "com.unity.collab-proxy": {
       "version": "1.17.2",

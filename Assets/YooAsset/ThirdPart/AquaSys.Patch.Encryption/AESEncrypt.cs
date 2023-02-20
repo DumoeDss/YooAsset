@@ -24,6 +24,10 @@ namespace AquaSys.Patch.Encryption
         {
             if (!File.Exists(path))
                 return;
+            if (File.Exists(destPath))
+            {
+                File.Delete(destPath);
+            }
             try
             {
                 using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
