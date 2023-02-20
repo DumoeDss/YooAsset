@@ -848,7 +848,7 @@ namespace YooAsset.Editor
 
 				try
 				{
-					CollectCommand command = new CollectCommand(EBuildMode.DryRunBuild, _enableAddressableToogle.value);
+					CollectCommand command = new CollectCommand(EBuildMode.DryRunBuild, package.PackageName, _enableAddressableToogle.value, AssetBundleCollectorSettingData.Setting.UniqueBundleName);
 					collectAssetInfos = collector.GetAllCollectAssets(command, package, group);
 				}
 				catch (System.Exception e)

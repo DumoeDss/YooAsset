@@ -24,7 +24,7 @@ namespace YooAsset.Editor
 		/// 资源包名称
 		/// </summary>
 		public string BundleName { private set; get; }
-
+		
 		/// <summary>
 		/// 可寻址地址
 		/// </summary>
@@ -39,7 +39,7 @@ namespace YooAsset.Editor
 		/// 资源分类标签
 		/// </summary>
 		public List<string> AssetTags { private set; get; }
-
+		
 		/// <summary>
 		/// 是否为原生资源
 		/// </summary>
@@ -55,7 +55,7 @@ namespace YooAsset.Editor
 		/// </summary>
 		public bool IsAssemblyAsset { private set; get; }
 
-		public CollectAssetInfo(ECollectorType collectorType, string packageName, bool includeInBuild, string bundleName, string address, string assetPath, List<string> assetTags, bool isRawAsset, bool isAssembly)
+		public CollectAssetInfo(ECollectorType collectorType, string packageName, bool includeInBuild, string bundleName, string address, string assetPath, bool isRawAsset, List<string> assetTags, bool isAssembly)
 		{
 			CollectorType = collectorType;
 			PackageName = packageName;
@@ -63,9 +63,9 @@ namespace YooAsset.Editor
 			BundleName = bundleName;
 			Address = address;
 			AssetPath = assetPath;
-			AssetTags = assetTags;
 			IsRawAsset = isRawAsset;
 			IsAssemblyAsset = isAssembly;
+			AssetTags = assetTags;		
 		}
 	}
 }

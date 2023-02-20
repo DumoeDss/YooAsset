@@ -161,16 +161,16 @@ namespace YooAsset.Editor
 				patchManifest.BundleNameList = bundleNameList.ToArray();
 				patchManifest.DependBundleNameList = dependBundleNameList.ToArray();
 
-				// 更新Unity内置资源包的引用关系
-				string shadersBunldeName = YooAssetSettingsData.GetUnityShadersBundleFullName(buildMapContext.UniqueBundleName, packageName);
-				if (buildParameters.BuildPipeline == EBuildPipeline.ScriptableBuildPipeline)
-				{
-					if (buildParameters.BuildMode == EBuildMode.IncrementalBuild)
-					{
-						var buildResultContext = context.GetContextObject<TaskBuilding_SBP.BuildResultContext>();
-						UpdateBuiltInBundleReference(patchManifest, buildResultContext.Results, shadersBunldeName);
-					}
-				}
+				//// 更新Unity内置资源包的引用关系
+				//string shadersBunldeName = YooAssetSettingsData.GetUnityShadersBundleFullName(buildMapContext.UniqueBundleName, packageName);
+				//if (buildParameters.BuildPipeline == EBuildPipeline.ScriptableBuildPipeline)
+				//{
+				//	if (buildParameters.BuildMode == EBuildMode.IncrementalBuild)
+				//	{
+				//		var buildResultContext = context.GetContextObject<TaskBuilding_SBP.BuildResultContext>();
+				//		UpdateBuiltInBundleReference(patchManifest, buildResultContext.Results, shadersBunldeName);
+				//	}
+				//}
 
 				// 创建补丁清单二进制文件
 				{
@@ -263,15 +263,15 @@ namespace YooAsset.Editor
 			{
 				var patchBundle = bundleInfo.CreatePatchBundle();
 
-				if (result.ContainsKey(bundleInfo.Package) && result[bundleInfo.Package] != null)
+				if (result.ContainsKey(bundleInfo.PackageName) && result[bundleInfo.PackageName] != null)
 				{
-					result[bundleInfo.Package].Add(patchBundle);
+					result[bundleInfo.PackageName].Add(patchBundle);
 				}
 				else
 				{
 					List<PatchBundle> bundles = new List<PatchBundle>(1000);
 					bundles.Add(patchBundle);
-					result[bundleInfo.Package] = bundles;
+					result[bundleInfo.PackageName] = bundles;
 				}
 			}
 
@@ -286,7 +286,6 @@ namespace YooAsset.Editor
 			Dictionary<string, List<PatchBundle>> result = new Dictionary<string, List<PatchBundle>>(1000);
 
 			var buildMapContext = context.GetContextObject<BuildMapContext>();
-			var buildParametersContext = context.GetContextObject<BuildParametersContext>();
 
 			foreach (var bundleInfo in buildMapContext.BundleInfos)
 			{
@@ -297,15 +296,15 @@ namespace YooAsset.Editor
 
 				var patchBundle = bundleInfo.CreatePatchBundle();
 
-				if (result.ContainsKey(bundleInfo.Package)&& result[bundleInfo.Package]!=null)
+				if (result.ContainsKey(bundleInfo.PackageName)&& result[bundleInfo.PackageName]!=null)
                 {
-					result[bundleInfo.Package].Add(patchBundle);
+					result[bundleInfo.PackageName].Add(patchBundle);
 				}
                 else
                 {
 					List<PatchBundle> bundles = new List<PatchBundle>(1000);
 					bundles.Add(patchBundle);
-					result[bundleInfo.Package] = bundles;
+					result[bundleInfo.PackageName] = bundles;
 				}
 			}
 
@@ -338,7 +337,7 @@ namespace YooAsset.Editor
 
 			foreach (var bundleInfo in buildMapContext.BundleInfos)
 			{
-				if (bundleInfo.Package == packageName)
+				if (bundleInfo.PackageName == packageName)
                 {
 					var assetInfos = bundleInfo.GetAllPatchAssetInfos();
 					foreach (var assetInfo in assetInfos)
@@ -350,21 +349,20 @@ namespace YooAsset.Editor
 							patchAsset.Address = string.Empty;
 						patchAsset.AssetPath = assetInfo.AssetPath;
 						patchAsset.AssetTags = assetInfo.AssetTags.ToArray();
-						var bundleName = assetInfo.GetBundleName();
+						var bundleName = assetInfo.BundleName;
 						if (bundleNameList.Contains(bundleName))
                         {
 							patchAsset.BundleID = bundleNameList.IndexOf(bundleName);
 						}
 						else
                         {
-							bundleNameList.Add(assetInfo.GetBundleName());
+							bundleNameList.Add(assetInfo.BundleName);
 							patchAsset.BundleID = bundleNameList.Count - 1;
 						}
 						patchAsset.DependIDs = GetAssetBundleDependIDs(bundleName, assetInfo, packageName,dependBundleNameList);
 						result.Add(patchAsset);
 					}
-                }
-					
+                }					
 			}
 			return result;
 		}
@@ -379,7 +377,7 @@ namespace YooAsset.Editor
 				{
 					if (dependAssetInfo.HasBundleName())
 					{
-						var bundleName = dependAssetInfo.GetBundleName();
+						var bundleName = dependAssetInfo.BundleName;
                         if (dependAssetInfo.PackageName != packageName)
                         {
 							bundleName = $"{bundleName}";//{dependAssetInfo.PackageName}@
