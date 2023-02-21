@@ -93,20 +93,21 @@ namespace YooAsset.Editor
 
             foreach (var pair in hotfixAssets)
             {
-                var list = pair.Value.Distinct();
+                var list = pair.Value.Distinct().ToList();
                 var folder = pair.Key == SettingsUtil.HybridCLRSettings.defaultPackageName ? "HotUpdate" : pair.Key;
                 var path = Path.Combine(tempDir, folder, platform);
                 CreateDirectory(path);
 
                 foreach (var dll in list)
                 {
-                    string dllPath = $"{hotfixDllSrcDir}/{dll}";
+                    string dllPath = $"{hotfixDllSrcDir}/{dll}.dll";
                     string dllBytesPath = $"{path}/{dll}.bytes";
                     if (File.Exists(dllBytesPath))
                     {
                         File.Delete(dllBytesPath);
                     }
-                    AESEncrypt.Encrypt(dllPath, dllBytesPath, Convert.ToBase64String(Encoding.UTF8.GetBytes(SettingsUtil.HybridCLRSettings.hotUpdateDllPassword)));
+                    Debug.Log($"Encrypt dll: {dllPath} -> {dllBytesPath}" );
+                    AESEncrypt.Encrypt(dllPath, dllBytesPath,Convert.ToBase64String(Encoding.UTF8.GetBytes(SettingsUtil.HybridCLRSettings.hotUpdateDllPassword)));
                 }
             }
            
@@ -171,8 +172,19 @@ namespace YooAsset.Editor
                             dllPath = $"{SettingsUtil.HybridCLRSettings.unityInstallRootDir}/{managedPath}/{dll}";
                             if (!File.Exists(dllPath))
                             {
-                                Debug.LogError($"ab中添加AOT补充元数据dll:{dll} 时发生错误,文件不存在。");
-                                throw new NotImplementedException();
+
+                                aotDllDir = GetAssembliesPostIl2CppStripDir(target);
+
+                                dllPath = $"{aotDllDir}/{dll}";
+                                if (!File.Exists(dllPath))
+                                {
+                                    Debug.LogError($"ab中添加AOT补充元数据dll:{dll} 时发生错误,文件不存在。裁剪后的AOT dll在BuildPlayer时才能生成，因此需要你先构建一次游戏App后再打包。");
+                                    throw new NotImplementedException();
+                                }
+                                else
+                                {
+                                    Debug.LogError($"添加AOT补充元数据dll: {dll} 时发生错误,未找到完整的dll文件,当前采用裁剪后的AOT dll。建议将该dll复制到 HybridCLRData/HotUpdateDlls/{target}");
+                                }
                             }
                         }
 #endif
