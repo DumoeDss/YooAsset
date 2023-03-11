@@ -26,8 +26,10 @@ namespace YooAsset.Editor
         void IBuildTask.Run(BuildContext context)
 		{
             linkXmlPath = $"{Application.dataPath}/{SettingsUtil.HybridCLRSettings.outputLinkFile}";
-            if (!File.Exists(linkXmlPath)||SettingsUtil.HybridCLRSettings.isAutoGenerateXml)
+            if (!File.Exists(linkXmlPath) || SettingsUtil.HybridCLRSettings.isAutoGenerateXml)
+            {
                 LinkGeneratorCommand.GenerateLinkXml();
+            }
 
             AssembliesContext assembliesContext = new AssembliesContext();
             BuildAssetBundleByTarget(assembliesContext);
@@ -100,18 +102,19 @@ namespace YooAsset.Editor
 
                 foreach (var dll in list)
                 {
+                    if(AOTMetaDlls.Contains($"{dll}.dll"))
+                        AOTMetaDlls.Remove($"{dll}.dll");
                     string dllPath = $"{hotfixDllSrcDir}/{dll}.dll";
                     string dllBytesPath = $"{path}/{dll}.bytes";
                     if (File.Exists(dllBytesPath))
                     {
                         File.Delete(dllBytesPath);
                     }
-                    Debug.Log($"Encrypt dll: {dllPath} -> {dllBytesPath}" );
                     AESEncrypt.Encrypt(dllPath, dllBytesPath,Convert.ToBase64String(Encoding.UTF8.GetBytes(SettingsUtil.HybridCLRSettings.hotUpdateDllPassword)));
                 }
             }
            
-            AppInitDataConfigs appDataConfigs = AssetDatabase.LoadAssetAtPath<AppInitDataConfigs>("Assets/DataConfigs/AppDataConfigs.asset");
+            AppInitDataConfigs appDataConfigs = AssetDatabase.LoadAssetAtPath<AppInitDataConfigs>("Assets/DataConfigs/AppInitDataConfigs.asset");
             appDataConfigs.AotDllList = new List<string>();
 
             foreach (var dll in AOTMetaDlls)
@@ -166,6 +169,7 @@ namespace YooAsset.Editor
                         var managedPath = "Playbackengines/WebGLSupport/Variations/il2cpp/Managed";
 
 #endif
+#endif
                         dllPath = $"{SettingsUtil.HybridCLRSettings.unityInstallRootDir}/{unityAotPath}/{dll}";
                         if (!File.Exists(dllPath))
                         {
@@ -187,7 +191,7 @@ namespace YooAsset.Editor
                                 }
                             }
                         }
-#endif
+
                     }
                 }
 
@@ -210,16 +214,27 @@ namespace YooAsset.Editor
             }
         }
 
+        List<string> _AOTMetaDlls;
+
         public List<string> AOTMetaDlls
         {
             get
             {
-                var strlist = LoadLink().Distinct().ToList();
-                for (int i = 0; i < strlist.Count; i++)
+                if(_AOTMetaDlls == null|| _AOTMetaDlls.Count==0)
                 {
-                    strlist[i] += ".dll";
+                    _AOTMetaDlls = LoadLink().Distinct().ToList();
+                    for (int i = 0; i < _AOTMetaDlls.Count; i++)
+                    {
+                        _AOTMetaDlls[i] += ".dll";
+                    }
                 }
-                return strlist;
+                return _AOTMetaDlls;
+               
+            }
+
+            set
+            {
+                _AOTMetaDlls = value;
             }
         }
 

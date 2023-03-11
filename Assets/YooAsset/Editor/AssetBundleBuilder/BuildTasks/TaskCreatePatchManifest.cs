@@ -112,7 +112,7 @@ namespace YooAsset.Editor
 							//分析当前Assembly的依赖
 							foreach (var assemblyName in assemblyNames)
 							{
-								var name = assemblyName.Name + ".dll";
+								var name = assemblyName.Name ;
 								//查找是否有跨包依赖
 								foreach (var item in assemblyBundlesDict)
 								{
