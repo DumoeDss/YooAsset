@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UniFramework.Event;
-using UniFramework.Module;
+using UniFramework.Singleton;
 using UnityEngine;
 using YooAsset;
 
@@ -26,13 +26,13 @@ public class StartUp : MonoBehaviour
         UniEvent.Initalize();
 
         // 初始化管理系统
-        UniModule.Initialize();
+        UniSingleton.Initialize();
 
         // 初始化资源系统
         YooAssets.Initialize();
         YooAssets.SetOperationSystemMaxTimeSlice(30);
 
-        UniModule.StartCoroutine(InitPackage());
+        UniSingleton.StartCoroutine(InitPackage());
 
     }
 
@@ -40,11 +40,11 @@ public class StartUp : MonoBehaviour
 	{
 		// 创建默认的资源包
 		string packageName = "DefaultPackage";
-		var package = YooAssets.TryGetAssetsPackage(packageName);
+		var package = YooAssets.TryGetPackage(packageName);
 		if (package == null)
 		{
-			package = YooAssets.CreateAssetsPackage(packageName, packageVersion);
-			YooAssets.SetDefaultAssetsPackage(package);
+			package = YooAssets.CreatePackage(packageName, packageVersion);
+			YooAssets.SetDefaultPackage(package);
 		}
 
 		// 编辑器下的模拟模式
@@ -52,7 +52,7 @@ public class StartUp : MonoBehaviour
 		if (playMode == EPlayMode.EditorSimulateMode)
 		{
 			var createParameters = new EditorSimulateModeParameters();
-			createParameters.SimulatePatchManifestPath = EditorSimulateModeHelper.SimulateBuild(packageName);
+			createParameters.SimulateManifestFilePath = EditorSimulateModeHelper.SimulateBuild(packageName);
 			initializationOperation = package.InitializeAsync(createParameters);
 		}
 
@@ -78,7 +78,7 @@ public class StartUp : MonoBehaviour
 		yield return initializationOperation;
 		if (package.InitializeStatus == EOperationStatus.Succeed)
 		{
-			UniModule.StartCoroutine(GetStaticVersion(package));
+			UniSingleton.StartCoroutine(GetStaticVersion(package));
 		}
 		else
 		{
@@ -105,14 +105,14 @@ public class StartUp : MonoBehaviour
 #endif
 	}
 
-	private IEnumerator GetStaticVersion(AssetsPackage package)
+	private IEnumerator GetStaticVersion(ResourcePackage package)
 	{
 		var operation = package.UpdatePackageVersionAsync();
 		yield return operation;
 
 		if (operation.Status == EOperationStatus.Succeed)
 		{
-			UniModule.StartCoroutine(UpdateManifest(package, operation.PackageVersion.crc));
+			UniSingleton.StartCoroutine(UpdateManifest(package, operation.PackageVersion.crc));
 		}
 		else
 		{
@@ -120,14 +120,14 @@ public class StartUp : MonoBehaviour
 		}
 	}
 
-	private IEnumerator UpdateManifest(AssetsPackage package,string packageVersion)
+	private IEnumerator UpdateManifest(ResourcePackage package,string packageVersion)
 	{
 		var operation = package.UpdatePackageManifestAsync(packageVersion);
 		yield return operation;
 
 		if (operation.Status == EOperationStatus.Succeed)
 		{
-			UniModule.StartCoroutine(CreateDownloader());
+			UniSingleton.StartCoroutine(CreateDownloader());
 		}
 		else
 		{
@@ -141,12 +141,12 @@ public class StartUp : MonoBehaviour
 
 		int downloadingMaxNum = 10;
 		int failedTryAgain = 3;
-		var downloader = YooAssets.CreatePatchDownloader(downloadingMaxNum, failedTryAgain);
+		var downloader = YooAssets.CreateResourceDownloader(downloadingMaxNum, failedTryAgain);
 
 		if (downloader.TotalDownloadCount == 0)
 		{
 			Debug.Log("Not found any download files !");
-			var package = YooAsset.YooAssets.GetAssetsPackage("DefaultPackage");
+			var package = YooAsset.YooAssets.GetPackage("DefaultPackage");
 			var operation = package.ClearUnusedCacheFilesAsync();
 			operation.Completed += Operation_Completed;
 		}
@@ -159,11 +159,11 @@ public class StartUp : MonoBehaviour
 			// 注意：开发者需要在下载前检测磁盘空间不足
 			int totalDownloadCount = downloader.TotalDownloadCount;
 			long totalDownloadBytes = downloader.TotalDownloadBytes;
-			UniModule.StartCoroutine(BeginDownload(downloader));
+			UniSingleton.StartCoroutine(BeginDownload(downloader));
 		}
 	}
 
-	private IEnumerator BeginDownload(PatchDownloaderOperation downloader)
+	private IEnumerator BeginDownload(DownloaderOperation downloader)
 	{
 		// 注册下载回调
 		//downloader.OnDownloadErrorCallback = PatchEventDefine.WebFileDownloadFailed.SendEventMessage;
@@ -181,7 +181,7 @@ public class StartUp : MonoBehaviour
 	private void Operation_Completed(YooAsset.AsyncOperationBase obj)
 	{
         // 创建游戏管理器
-        UniModule.CreateModule<GameManager>();
+        UniSingleton.CreateSingleton<GameManager>();
 
         // 开启游戏流程
         GameManager.Instance.Run();
@@ -217,16 +217,16 @@ public class StartUp : MonoBehaviour
 			throw new NotImplementedException();
 		}
 
-		public FileStream LoadFromStream(DecryptFileInfo fileInfo)
-		{
-			BundleStream bundleStream = new BundleStream(fileInfo.FilePath, FileMode.Open);
-			return bundleStream;
-		}
-
 		public uint GetManagedReadBufferSize()
 		{
 			return 1024;
 		}
-	}
+
+        Stream IDecryptionServices.LoadFromStream(DecryptFileInfo fileInfo)
+        {
+            BundleStream bundleStream = new BundleStream(fileInfo.FilePath, FileMode.Open);
+            return bundleStream;
+        }
+    }
 
 }

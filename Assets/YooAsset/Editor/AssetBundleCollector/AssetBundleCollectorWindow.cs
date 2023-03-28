@@ -598,8 +598,8 @@ namespace YooAsset.Editor
 			}
 			{
 				var textField = new TextField();
-				textField.name = "TextField0";
-				textField.label = "Address";
+				textField.name = "AddressPrefix";
+				textField.label = "AddressPrefix";
 				textField.style.unityTextAlign = TextAnchor.MiddleLeft;
 				textField.style.flexGrow = 1f;
 				elementBottom.Add(textField);
@@ -620,14 +620,14 @@ namespace YooAsset.Editor
 				var popupField = new PopupField<RuleDisplayName>(_addressRuleList, 0);
 				popupField.name = "PopupField1";
 				popupField.style.unityTextAlign = TextAnchor.MiddleLeft;
-				popupField.style.width = 200;
+				popupField.style.width = 220;
 				elementBottom.Add(popupField);
 			}
 			{
 				var popupField = new PopupField<RuleDisplayName>(_packRuleList, 0);
 				popupField.name = "PopupField2";
 				popupField.style.unityTextAlign = TextAnchor.MiddleLeft;
-				popupField.style.width = 230;
+				popupField.style.width = 220;
 				elementBottom.Add(popupField);
 			}
 			{
@@ -720,13 +720,13 @@ namespace YooAsset.Editor
 				RemoveCollectorBtn_clicked(collector);
 			};
 
-			// Address
-			var textFiled0 = element.Q<TextField>("TextField0");
-			textFiled0.SetValueWithoutNotify(collector.Address);
+            // AddressPrefix
+            var textFiled0 = element.Q<TextField>("AddressPrefix");
+			textFiled0.SetValueWithoutNotify(collector.AddressPrefix);
 			textFiled0.RegisterValueChangedCallback(evt =>
 			{
-				collector.Address = evt.newValue;
-				AssetBundleCollectorSettingData.ModifyCollector(selectGroup, collector);
+				collector.AddressPrefix = evt.newValue;
+                AssetBundleCollectorSettingData.ModifyCollector(selectGroup, collector);
 			});
 
 			// Collector Path
@@ -805,16 +805,16 @@ namespace YooAsset.Editor
 				}
 			});
 
-			// MultiPlatform
-			var IsMultiPlatform = element.Q<Toggle>("IsMultiPlatform");
+            // MultiPlatform
+            var IsMultiPlatform = element.Q<Toggle>("IsMultiPlatform");
 			IsMultiPlatform.SetValueWithoutNotify(collector.IsMultiPlatform);
 			IsMultiPlatform.RegisterValueChangedCallback(evt =>
-			{
-				collector.IsMultiPlatform = evt.newValue;
-				AssetBundleCollectorSettingData.ModifyCollector(selectGroup, collector);
-			});
+            {
+                collector.IsMultiPlatform = evt.newValue;
+                AssetBundleCollectorSettingData.ModifyCollector(selectGroup, collector);
+            });
 
-			var isAssemblyAsset = element.Q<Toggle>("IsAssembly");
+            var isAssemblyAsset = element.Q<Toggle>("IsAssembly");
 			isAssemblyAsset.SetValueWithoutNotify(collector.IsAssembly);
 			isAssemblyAsset.RegisterValueChangedCallback(evt =>
 			{
@@ -868,7 +868,7 @@ namespace YooAsset.Editor
 						if (_enableAddressableToogle.value)
 						{
 							IAddressRule instance = AssetBundleCollectorSettingData.GetAddressRuleInstance(collector.AddressRuleName);
-							AddressRuleData ruleData = new AddressRuleData(collectAssetInfo.AssetPath, collector.CollectPath, group.GroupName, collector.Address, collector.IsMultiPlatform);
+							AddressRuleData ruleData = new AddressRuleData(collectAssetInfo.AssetPath, collector.CollectPath, group.GroupName, collector.AddressPrefix, collector.IsMultiPlatform);
 							string addressValue = instance.GetAssetAddress(ruleData);
 							showInfo = $"[{addressValue}] {showInfo}";
 						}

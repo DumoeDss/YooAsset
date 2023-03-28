@@ -41,12 +41,6 @@ namespace YooAsset.Editor
 			var buildParametersContext = new BuildParametersContext(buildParameters);
 			_buildContext.SetContextObject(buildParametersContext);
 
-			// 是否显示LOG
-			if (buildParameters.BuildMode == EBuildMode.SimulateBuild)
-				BuildRunner.EnableLog = false;
-			else
-				BuildRunner.EnableLog = true;
-
 			// 创建构建节点
 			List<IBuildTask> pipeline  = new List<IBuildTask>
 				{
@@ -100,12 +94,6 @@ namespace YooAsset.Editor
 			var buildParametersContext = new BuildParametersContext(buildParameters);
 			_buildContext.SetContextObject(buildParametersContext);
 
-			// 是否显示LOG
-			if (buildParameters.BuildMode == EBuildMode.SimulateBuild)
-				BuildRunner.EnableLog = false;
-			else
-				BuildRunner.EnableLog = true;
-
 			// 创建构建节点
 			List<IBuildTask> pipeline;
 			if (buildParameters.BuildPipeline == EBuildPipeline.BuiltinBuildPipeline)
@@ -116,12 +104,13 @@ namespace YooAsset.Editor
 					new TaskBuildAssemblies(), //HybridCLR编译脚本
 					new TaskGetBuildMap(), //获取构建列表
 					new TaskBuilding(), //开始执行构建
+					new TaskCopyRawFile(), //拷贝原生文件
 					new TaskVerifyBuildResult(), //验证构建结果
 					new TaskEncryption(), //加密资源文件
-					new TaskUpdateBuildInfo(), //更新构建信息
-					new TaskCreatePatchManifest(), //创建清单文件
+					new TaskUpdateBundleInfo(), //更新资源包信息
+					new TaskCreateManifest(), //创建清单文件
 					new TaskCreateReport(), //创建报告文件
-					new TaskCreatePatchPackage(), //制作补丁包
+					new TaskCreatePackage(), //制作包裹
 					new TaskCopyBuildinFiles(), //拷贝内置文件
 				};
 			}
@@ -133,12 +122,13 @@ namespace YooAsset.Editor
 					new TaskBuildAssemblies(), //HybridCLR编译脚本
 					new TaskGetBuildMap(), //获取构建列表
 					new TaskBuilding_SBP(), //开始执行构建
+					new TaskCopyRawFile(), //拷贝原生文件
 					new TaskVerifyBuildResult_SBP(), //验证构建结果
 					new TaskEncryption(), //加密资源文件
-					new TaskUpdateBuildInfo(), //更新构建信息
-					new TaskCreatePatchManifest(), //创建清单文件
+					new TaskUpdateBundleInfo(), //更新补丁信息
+					new TaskCreateManifest(), //创建清单文件
 					new TaskCreateReport(), //创建报告文件
-					new TaskCreatePatchPackage(), //制作补丁包
+					new TaskCreatePackage(), //制作补丁包
 					new TaskCopyBuildinFiles(), //拷贝内置文件
 				};
 			}
@@ -147,19 +137,23 @@ namespace YooAsset.Editor
 				throw new NotImplementedException();
 			}
 
+			// 初始化日志
+			BuildLogger.InitLogger(buildParameters.EnableLog);
+
 			// 执行构建流程
 			var buildResult = BuildRunner.Run(pipeline, _buildContext);
 			if (buildResult.Success)
 			{
 				buildResult.OutputPackageDirectory = buildParametersContext.GetPackageOutputDirectory();
-				Debug.Log($"{buildParameters.BuildMode} pipeline build succeed !");
+				BuildLogger.Log($"{buildParameters.BuildMode} pipeline build succeed !");
 			}
 			else
 			{
-				Debug.LogWarning($"{buildParameters.BuildMode} pipeline build failed !");
-				Debug.LogError($"Build task failed : {buildResult.FailedTask}");
-				Debug.LogError($"Build task error : {buildResult.FailedInfo}");
+				BuildLogger.Warning($"{buildParameters.BuildMode} pipeline build failed !");
+				BuildLogger.Error($"Build task failed : {buildResult.FailedTask}");
+				BuildLogger.Error($"Build task error : {buildResult.FailedInfo}");
 			}
+
 			return buildResult;
 		}
 	}

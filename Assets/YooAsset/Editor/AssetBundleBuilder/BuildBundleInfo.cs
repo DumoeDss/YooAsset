@@ -8,7 +8,7 @@ namespace YooAsset.Editor
 {
 	public class BuildBundleInfo
 	{
-		public class BuildPatchInfo
+		public class InfoWrapper
 		{
 			/// <summary>
 			/// 构建内容的哈希值
@@ -18,17 +18,17 @@ namespace YooAsset.Editor
 			/// <summary>
 			/// 文件哈希值
 			/// </summary>
-			public string PatchFileHash { set; get; }
+			public string FileHash { set; get; }
 
 			/// <summary>
 			/// 文件哈希值
 			/// </summary>
-			public string PatchFileCRC { set; get; }
+			public string FileCRC { set; get; }
 
 			/// <summary>
 			/// 文件哈希值
 			/// </summary>
-			public long PatchFileSize { set; get; }
+			public long FileSize { set; get; }
 
 
 			/// <summary>
@@ -39,7 +39,7 @@ namespace YooAsset.Editor
 			/// <summary>
 			/// 补丁包输出文件路径
 			/// </summary>
-			public string PatchOutputFilePath { set; get; }
+			public string PackageOutputFilePath { set; get; }
 		}
 
 		/// <summary>
@@ -55,12 +55,12 @@ namespace YooAsset.Editor
 		/// 参与构建的资源列表
 		/// 注意：不包含零依赖资源
 		/// </summary>
-		public readonly List<BuildAssetInfo> BuildinAssets = new List<BuildAssetInfo>();
+		public readonly List<BuildAssetInfo> AllMainAssets = new List<BuildAssetInfo>();
 
 		/// <summary>
 		/// 补丁文件信息
 		/// </summary>
-		public readonly BuildPatchInfo PatchInfo = new BuildPatchInfo();
+		public readonly InfoWrapper BundleInfo = new InfoWrapper();
 
 		/// <summary>
 		/// Bundle文件的加载方法
@@ -80,9 +80,9 @@ namespace YooAsset.Editor
 		{
 			get
 			{
-				foreach (var asset in BuildinAssets)
+				foreach (var assetInfo in AllMainAssets)
 				{
-					if (asset.IsRawAsset)
+					if (assetInfo.IsRawAsset)
 						return true;
 				}
 				return false;
@@ -110,7 +110,7 @@ namespace YooAsset.Editor
 		{
 			get
 			{
-				foreach (var asset in BuildinAssets)
+				foreach (var asset in AllMainAssets)
 				{
 					if (asset.IsAssemblyAsset)
 						return true;
@@ -127,7 +127,7 @@ namespace YooAsset.Editor
 			get
 			{
 				string assembly = string.Empty;
-				foreach (var asset in BuildinAssets)
+				foreach (var asset in AllMainAssets)
 				{
 					if (asset.IsAssemblyAsset)
 						assembly += asset.Address + ";";
@@ -151,7 +151,7 @@ namespace YooAsset.Editor
 			if (IsContainsAsset(assetInfo.AssetPath))
 				throw new System.Exception($"Asset is existed : {assetInfo.AssetPath}");
 
-			BuildinAssets.Add(assetInfo);
+			AllMainAssets.Add(assetInfo);
 		}
 
 		/// <summary>
@@ -159,7 +159,7 @@ namespace YooAsset.Editor
 		/// </summary>
 		public bool IsContainsAsset(string assetPath)
 		{
-			foreach (var assetInfo in BuildinAssets)
+			foreach (var assetInfo in AllMainAssets)
 			{
 				if (assetInfo.AssetPath == assetPath)
 				{
@@ -174,8 +174,8 @@ namespace YooAsset.Editor
 		/// </summary>
 		public string[] GetBundleTags()
 		{
-			List<string> result = new List<string>(BuildinAssets.Count);
-			foreach (var assetInfo in BuildinAssets)
+			List<string> result = new List<string>(AllMainAssets.Count);
+			foreach (var assetInfo in AllMainAssets)
 			{
 				foreach (var assetTag in assetInfo.BundleTags)
 				{
@@ -187,19 +187,42 @@ namespace YooAsset.Editor
 		}
 
 		/// <summary>
-		/// 获取构建的资源路径列表
+		/// 获取该资源包内的所有资源（包括零依赖资源）
 		/// </summary>
-		public string[] GetBuildinAssetPaths()
+		public List<string> GetAllBuiltinAssetPaths()
 		{
-			return BuildinAssets.Select(t => t.AssetPath).ToArray();
+			var packAssets = GetAllMainAssetPaths();
+			List<string> result = new List<string>(packAssets);
+			foreach (var assetInfo in AllMainAssets)
+			{
+				if (assetInfo.AllDependAssetInfos == null)
+					continue;
+				foreach (var dependAssetInfo in assetInfo.AllDependAssetInfos)
+				{
+					if (dependAssetInfo.HasBundleName() == false)
+					{
+						if (result.Contains(dependAssetInfo.AssetPath) == false)
+							result.Add(dependAssetInfo.AssetPath);
+					}
+				}
+			}
+			return result;
+		}
+
+        /// <summary>
+        /// 获取构建的资源路径列表
+        /// </summary>
+        public string[] GetAllMainAssetPaths()
+		{
+			return AllMainAssets.Select(t => t.AssetPath).ToArray();
 		}
 
 		/// <summary>
 		/// 获取所有写入补丁清单的资源
 		/// </summary>
-		public BuildAssetInfo[] GetAllPatchAssetInfos()
+		public BuildAssetInfo[] GetAllMainAssetInfos()
 		{
-			return BuildinAssets.Where(t => t.CollectorType == ECollectorType.MainAssetCollector).ToArray();
+			return AllMainAssets.Where(t => t.CollectorType == ECollectorType.MainAssetCollector).ToArray();
 		}
 
 		/// <summary>
@@ -211,26 +234,26 @@ namespace YooAsset.Editor
 			AssetBundleBuild build = new AssetBundleBuild();
 			build.assetBundleName = BundleName;
 			build.assetBundleVariant = string.Empty;
-			build.assetNames = GetBuildinAssetPaths();
+			build.assetNames = GetAllMainAssetPaths();
 			return build;
 		}
 
 		/// <summary>
-		/// 创建PatchBundle类
+		/// 创建PackageBundle类
 		/// </summary>
-		internal PatchBundle CreatePatchBundle()
+		internal PackageBundle CreatePackageBundle()
 		{
-			PatchBundle patchBundle = new PatchBundle();
-			patchBundle.BundleName = BundleName;
-			patchBundle.FileHash = PatchInfo.PatchFileHash;
-			patchBundle.FileCRC = PatchInfo.PatchFileCRC;
-			patchBundle.FileSize = PatchInfo.PatchFileSize;
-			patchBundle.IsRawFile = IsRawFile;
-			patchBundle.LoadMethod = (byte)LoadMethod;
-			patchBundle.Tags = GetBundleTags();
-			patchBundle.IsAssemblyAsset = IsAssemblyAsset;
-			patchBundle.AssemblyAddresses = AssemblyAddresses;
-			return patchBundle;
+			PackageBundle packageBundle = new PackageBundle();
+			packageBundle.BundleName = BundleName;
+			packageBundle.FileHash = BundleInfo.FileHash;
+			packageBundle.FileCRC = BundleInfo.FileCRC;
+			packageBundle.FileSize = BundleInfo.FileSize;
+			packageBundle.IsRawFile = IsRawFile;
+			packageBundle.LoadMethod = (byte)LoadMethod;
+			packageBundle.Tags = GetBundleTags();
+			packageBundle.IsAssemblyAsset = IsAssemblyAsset;
+			packageBundle.AssemblyAddresses = AssemblyAddresses;
+			return packageBundle;
 		}
 	}
 }

@@ -52,7 +52,7 @@ namespace YooAsset
 		/// </summary>
 		public static string GetManifestJsonFileNameWitchCrc(string packageName, string crc)
 		{
-			return $"{Setting.PatchManifestFileName}_{packageName}_{crc}.json";
+			return $"{Setting.ManifestFileName}_{packageName}_{crc}.json";
 		}
 
 		/// <summary>
@@ -60,7 +60,7 @@ namespace YooAsset
 		/// </summary>
 		public static string GetManifestBinaryFileName(string packageName,string crc)
 		{
-			return $"{Setting.PatchManifestFileName}_{packageName}_{crc}.bytes";
+			return $"{Setting.ManifestFileName}_{packageName}_{crc}.bytes";
 		}
 
 		/// <summary>
@@ -68,7 +68,7 @@ namespace YooAsset
 		/// </summary>
 		public static string GetPackageVersionFileName(string packageName, string crc)
 		{
-			return $"{Setting.PatchManifestFileName}_{packageName}_{crc}.version";
+			return $"{Setting.ManifestFileName}_{packageName}_{crc}.version";
 		}
 
 		///// <summary>

@@ -3,8 +3,19 @@ namespace YooAsset
 {
 	public class AssetInfo
 	{
-		private readonly PatchAsset _patchAsset;
+		private readonly PackageAsset _packageAsset;
 		private string _providerGUID;
+
+		/// <summary>
+		/// 资源类型
+		/// </summary>
+		public System.Type AssetType { private set; get; }
+
+		/// <summary>
+		/// 错误信息
+		/// </summary>
+		public string Error { private set; get; }
+
 
 		/// <summary>
 		/// 唯一标识符
@@ -31,63 +42,66 @@ namespace YooAsset
 		{
 			get
 			{
-				return _patchAsset == null;
+				return _packageAsset == null;
 			}
 		}
 
 		/// <summary>
-		/// 错误信息
-		/// </summary>
-		internal string Error { private set; get; }
-
-		/// <summary>
 		/// 可寻址地址
 		/// </summary>
-		public string Address { private set; get; }
+		public string Address
+		{
+			get
+			{
+				if (_packageAsset == null)
+					return string.Empty;
+				return _packageAsset.Address;
+			}
+		}
 
 		/// <summary>
 		/// 资源路径
 		/// </summary>
-		public string AssetPath { private set; get; }
-		
-		/// <summary>
-		/// 资源类型
-		/// </summary>
-		public System.Type AssetType { private set; get; }
+		public string AssetPath
+		{
+			get
+			{
+				if (_packageAsset == null)
+					return string.Empty;
+				return _packageAsset.AssetPath;
+			}
+		}
 
 
-		// 注意：这是一个内部类，严格限制外部创建。
 		private AssetInfo()
 		{
+			// 注意：禁止从外部创建该类
 		}
-		internal AssetInfo(PatchAsset patchAsset, System.Type assetType)
+		internal AssetInfo(PackageAsset packageAsset, System.Type assetType)
 		{
-			if (patchAsset == null)
+			if (packageAsset == null)
 				throw new System.Exception("Should never get here !");
 
-			_patchAsset = patchAsset;
+			_providerGUID = string.Empty;
+			_packageAsset = packageAsset;
 			AssetType = assetType;
-			Address = patchAsset.Address;
-			AssetPath = patchAsset.AssetPath;
 			Error = string.Empty;
 		}
-		internal AssetInfo(PatchAsset patchAsset)
+		internal AssetInfo(PackageAsset packageAsset)
 		{
-			if (patchAsset == null)
+			if (packageAsset == null)
 				throw new System.Exception("Should never get here !");
 
-			_patchAsset = patchAsset;
+			_providerGUID = string.Empty;
+			_packageAsset = packageAsset;
 			AssetType = null;
-			Address = patchAsset.Address;
-			AssetPath = patchAsset.AssetPath;
 			Error = string.Empty;
 		}
 		internal AssetInfo(string error)
 		{
-			_patchAsset = null;
+			_providerGUID = string.Empty;
+			_packageAsset = null;
 			AssetType = null;
-			Address = string.Empty;
-			AssetPath = string.Empty;
 			Error = error;
 		}
 	}

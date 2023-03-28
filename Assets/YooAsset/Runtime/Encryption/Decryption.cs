@@ -19,15 +19,15 @@ namespace AquaSys.Patch.Encryption
 			return null;
 		}
 
-		public FileStream LoadFromStream(DecryptFileInfo fileInfo)
-		{
-			FileStream bundleStream = new FileStream(fileInfo.FilePath, FileMode.Open);
-			return bundleStream;
-		}
-
 		public uint GetManagedReadBufferSize()
 		{
 			return 1024;
 		}
-	}
+
+        Stream IDecryptionServices.LoadFromStream(DecryptFileInfo fileInfo)
+        {
+            FileStream bundleStream = new FileStream(fileInfo.FilePath, FileMode.Open);
+            return bundleStream;
+        }
+    }
 }

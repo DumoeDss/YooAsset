@@ -41,16 +41,25 @@ namespace YooAsset.Editor
 				throw new Exception($"构建过程中发生错误 : {exitCode}");
 			}
 
-			BuildRunner.Log("Unity引擎打包成功！");
+			// 创建着色器信息
+			// 说明：解决因为着色器资源包导致验证失败。
+			// 例如：当项目里没有着色器，如果有依赖内置着色器就会验证失败。
+			string shadersBundleName = buildMapContext.ShadersBundleName;
+			if (buildResults.BundleInfos.ContainsKey(shadersBundleName))
+			{
+				buildMapContext.CreateShadersBundleInfo(shadersBundleName);
+			}
+
+			BuildLogger.Log("Unity引擎打包成功！");
 			BuildResultContext buildResultContext = new BuildResultContext();
 			buildResultContext.Results = buildResults;
 			context.SetContextObject(buildResultContext);
 
-			// 拷贝原生文件
-			if (buildMode == EBuildMode.ForceRebuild || buildMode == EBuildMode.IncrementalBuild)
-			{
-				CopyRawBundle(buildMapContext, buildParametersContext);
-			}
+			// // 拷贝原生文件
+			//if (buildMode == EBuildMode.ForceRebuild || buildMode == EBuildMode.IncrementalBuild)
+			//{
+			//	CopyRawBundle(buildMapContext, buildParametersContext);
+			//}
 		}
 
 		/// <summary>
@@ -59,12 +68,12 @@ namespace YooAsset.Editor
 		private void CopyRawBundle(BuildMapContext buildMapContext, BuildParametersContext buildParametersContext)
 		{
 			string pipelineOutputDirectory = buildParametersContext.GetPipelineOutputDirectory();
-			foreach (var bundleInfo in buildMapContext.BundleInfos)
+			foreach (var bundleInfo in buildMapContext.Collection)
 			{
 				if (bundleInfo.IsRawFile)
 				{
 					string dest = $"{pipelineOutputDirectory}/{bundleInfo.PackageName}/{bundleInfo.BundleName}";
-					foreach (var buildAsset in bundleInfo.BuildinAssets)
+					foreach (var buildAsset in bundleInfo.AllMainAssets)
 					{
 						if (buildAsset.IsRawAsset)
 							EditorTools.CopyFile(buildAsset.AssetPath, dest, true);

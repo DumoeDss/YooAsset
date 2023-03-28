@@ -100,7 +100,7 @@ namespace YooAsset.Editor
 			{
 				if (package.PackageName == packageName)
 				{
-					CollectCommand command = new CollectCommand(buildMode, package.PackageName, EnableAddressable, UniqueBundleName);
+					CollectCommand command = new CollectCommand(buildMode, packageName, EnableAddressable, UniqueBundleName);
 					CollectResult collectResult = new CollectResult(command);
 					collectResult.SetCollectAssets(package.GetAllCollectAssets(command));
 					return collectResult;

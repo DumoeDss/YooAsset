@@ -18,6 +18,7 @@ namespace YooAsset.Editor
 			buildParameters.BuildMode = EBuildMode.SimulateBuild;
 			buildParameters.PackageNames = new System.Collections.Generic.List<string>() { packageName };
 			buildParameters.PackageVersion = "Simulate";
+			buildParameters.EnableLog = false;
 
 			AssetBundleBuilder builder = new AssetBundleBuilder();
 			var buildResult = builder.Run(buildParameters);

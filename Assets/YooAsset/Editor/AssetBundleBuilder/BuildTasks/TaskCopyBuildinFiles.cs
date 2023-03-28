@@ -12,14 +12,14 @@ namespace YooAsset.Editor
 		void IBuildTask.Run(BuildContext context)
 		{
 			var buildParametersContext = context.GetContextObject<BuildParametersContext>();
-			var patchManifestContext = context.GetContextObject<PatchManifestContext>();
+			var manifestContext = context.GetContextObject<PackageManifestContext>();
             var buildMapContext = context.GetContextObject<BuildMapContext>();
             var buildMode = buildParametersContext.Parameters.BuildMode;
 			if (buildMode == EBuildMode.ForceRebuild || buildMode == EBuildMode.IncrementalBuild)
 			{
 				if (buildParametersContext.Parameters.CopyBuildinFileOption != ECopyBuildinFileOption.None)
 				{
-					CopyBuildinFilesToStreaming(buildParametersContext, buildMapContext, patchManifestContext);
+					CopyBuildinFilesToStreaming(buildParametersContext, buildMapContext, manifestContext);
 				}
 			}
 		}
@@ -27,7 +27,7 @@ namespace YooAsset.Editor
 		/// <summary>
 		/// 拷贝首包资源文件
 		/// </summary>
-		private void CopyBuildinFilesToStreaming(BuildParametersContext buildParametersContext, BuildMapContext buildMapContext, PatchManifestContext patchManifestContext)
+		private void CopyBuildinFilesToStreaming(BuildParametersContext buildParametersContext, BuildMapContext buildMapContext, PackageManifestContext manifestContext)
 		{
             ECopyBuildinFileOption option = buildParametersContext.Parameters.CopyBuildinFileOption;
             string packageOutputDirectory = buildParametersContext.GetPackageOutputDirectory();
@@ -39,12 +39,12 @@ namespace YooAsset.Editor
                 AssetBundleBuilderHelper.ClearStreamingAssetsFolder();
             }
 
-            foreach (var item in patchManifestContext.PatchManifests)
+            foreach (var item in manifestContext.Manifests)
             {
                 // 加载补丁清单
                 string buildPackageName = item.Key;
                 string packageName = buildPackageName.Split('_')[1];
-                PatchManifest patchManifest = item.Value;
+                PackageManifest packageManifest = item.Value;
 
                 // 拷贝补丁清单文件
                 {
@@ -58,9 +58,9 @@ namespace YooAsset.Editor
                 // 拷贝文件列表（所有文件）
                 if (option == ECopyBuildinFileOption.ClearAndCopyAll || option == ECopyBuildinFileOption.OnlyCopyAll)
                 {
-                    foreach (var patchBundle in patchManifest.BundleList)
+                    foreach (var patchBundle in packageManifest.BundleList)
                     {
-                        var bundleInfo = buildMapContext.BundleInfos.Find(_=>_.BundleName == patchBundle.BundleName);
+                        var bundleInfo = buildMapContext.GetBundleInfo(patchBundle.BundleName);
                         //string sourcePath = bundleInfo.PatchInfo.BuildOutputFilePath;
                         string sourcePath = $"{packageOutputDirectory}/{packageName}/{patchBundle.FileName}";
                         string destPath = $"{streamingAssetsDirectory}/{packageName}/{patchBundle.FileName}";
@@ -72,12 +72,12 @@ namespace YooAsset.Editor
                 if (option == ECopyBuildinFileOption.ClearAndCopyByTags || option == ECopyBuildinFileOption.OnlyCopyByTags)
                 {
                     string[] tags = buildParametersContext.Parameters.CopyBuildinFileTags.Split(';');
-                    foreach (var patchBundle in patchManifest.BundleList)
+                    foreach (var patchBundle in packageManifest.BundleList)
                     {
                         if (patchBundle.HasTag(tags) == false)
                             continue;
                         string sourcePath = $"{packageOutputDirectory}/{packageName}/{patchBundle.FileName}";
-                        var bundleInfo = buildMapContext.BundleInfos.Find(_ => _.BundleName == patchBundle.BundleName);
+                        var bundleInfo = buildMapContext.GetBundleInfo(patchBundle.BundleName);
                         //string sourcePath = bundleInfo.PatchInfo.BuildOutputFilePath;
                         string destPath = $"{streamingAssetsDirectory}/{packageName}/{patchBundle.FileName}";
                         EditorTools.CopyFile(sourcePath, destPath, true);
@@ -86,10 +86,9 @@ namespace YooAsset.Editor
 
             }
 
-
             // 刷新目录
             AssetDatabase.Refresh();
-            BuildRunner.Log($"内置文件拷贝完成:");//($"内置文件拷贝完成：{streamingAssetsDirectory}");
+            BuildLogger.Log($"内置文件拷贝完成:");//($"内置文件拷贝完成：{streamingAssetsDirectory}");
 		}
 	}
 }
