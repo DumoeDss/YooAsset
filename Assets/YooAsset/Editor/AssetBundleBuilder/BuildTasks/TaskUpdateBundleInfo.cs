@@ -51,7 +51,7 @@ namespace YooAsset.Editor
 			{
 				string fileExtension = ManifestTools.GetRemoteBundleFileExtension(bundleInfo.BundleName);
 				string fileName = ManifestTools.GetRemoteBundleFileName(outputNameStyle, bundleInfo.BundleName, fileExtension, bundleInfo.BundleInfo.FileHash);
-				bundleInfo.BundleInfo.PackageOutputFilePath = $"{packageOutputDirectory}/{fileName}";
+				bundleInfo.BundleInfo.PackageOutputFilePath = $"{packageOutputDirectory}/{bundleInfo.PackageName}/{fileName}";
 			}
 		}
 

@@ -46,11 +46,11 @@ namespace YooAsset.Editor
 			buildResultContext.UnityManifest = buildResults;
 			context.SetContextObject(buildResultContext);
 
-			// // 拷贝原生文件
-			//if (buildMode == EBuildMode.ForceRebuild || buildMode == EBuildMode.IncrementalBuild)
-			//{
-			//	CopyRawBundle(buildMapContext, buildParametersContext);
-			//}
+			// 拷贝原生文件
+			if (buildMode == EBuildMode.ForceRebuild || buildMode == EBuildMode.IncrementalBuild)
+			{
+				CopyRawBundle(buildMapContext, buildParametersContext);
+			}
 		}
 
 		/// <summary>

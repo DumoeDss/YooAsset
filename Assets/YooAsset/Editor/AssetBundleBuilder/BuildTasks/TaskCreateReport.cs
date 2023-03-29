@@ -12,7 +12,7 @@ namespace YooAsset.Editor
 		{
 			var buildParameters = context.GetContextObject<BuildParametersContext>();
 			var buildMapContext = context.GetContextObject<BuildMapContext>();
-			var manifestContext = context.GetContextObject<PackageManifestContext>();
+			var manifestContext = context.GetContextObject<ManifestContext>();
 
 			var buildMode = buildParameters.Parameters.BuildMode;
 			if (buildMode != EBuildMode.SimulateBuild)
@@ -21,7 +21,7 @@ namespace YooAsset.Editor
 			}
 		}
 
-		private void CreateReportFile(BuildParametersContext buildParametersContext, BuildMapContext buildMapContext, PackageManifestContext manifestContext)
+		private void CreateReportFile(BuildParametersContext buildParametersContext, BuildMapContext buildMapContext, ManifestContext manifestContext)
 		{
             var buildParameters = buildParametersContext.Parameters;
             string packageOutputDirectory = buildParametersContext.GetPackageOutputDirectory();
@@ -99,7 +99,7 @@ namespace YooAsset.Editor
 					reportBundleInfo.IsRawFile = packageBundle.IsRawFile;
 					reportBundleInfo.LoadMethod = (EBundleLoadMethod)packageBundle.LoadMethod;
 					reportBundleInfo.ReferenceIDs = packageBundle.ReferenceIDs;
-					reportBundleInfo.AllBuiltinAssets = GetAllBuiltinAssets(buildMapContext, packageName);			
+					reportBundleInfo.AllBuiltinAssets = GetAllBuiltinAssets(buildMapContext, packageBundle.BundleName);			
 					buildReport.BundleInfos.Add(reportBundleInfo);
 				}
 

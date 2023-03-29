@@ -12,7 +12,7 @@ namespace YooAsset.Editor
 		void IBuildTask.Run(BuildContext context)
 		{
 			var buildParametersContext = context.GetContextObject<BuildParametersContext>();
-			var manifestContext = context.GetContextObject<PackageManifestContext>();
+			var manifestContext = context.GetContextObject<ManifestContext>();
             var buildMapContext = context.GetContextObject<BuildMapContext>();
             var buildMode = buildParametersContext.Parameters.BuildMode;
 			if (buildMode == EBuildMode.ForceRebuild || buildMode == EBuildMode.IncrementalBuild)
@@ -27,12 +27,11 @@ namespace YooAsset.Editor
 		/// <summary>
 		/// 拷贝首包资源文件
 		/// </summary>
-		private void CopyBuildinFilesToStreaming(BuildParametersContext buildParametersContext, BuildMapContext buildMapContext, PackageManifestContext manifestContext)
+		private void CopyBuildinFilesToStreaming(BuildParametersContext buildParametersContext, BuildMapContext buildMapContext, ManifestContext manifestContext)
 		{
             ECopyBuildinFileOption option = buildParametersContext.Parameters.CopyBuildinFileOption;
             string packageOutputDirectory = buildParametersContext.GetPackageOutputDirectory();
             string streamingAssetsDirectory = AssetBundleBuilderHelper.GetStreamingAssetsFolderPath();
-            string buildPackageVersion = buildParametersContext.Parameters.PackageVersion;
             // 清空流目录
             if (option == ECopyBuildinFileOption.ClearAndCopyAll || option == ECopyBuildinFileOption.ClearAndCopyByTags)
             {
