@@ -150,6 +150,7 @@ namespace YooAsset
 						packageBundle.ParseBundle(Manifest.PackageName, Manifest.OutputNameStyle);
 						Manifest.BundleDic.Add(packageBundle.BundleName, packageBundle);
 
+
 						_packageBundleCount--;
 						Progress = 1f - _packageBundleCount / _progressTotalValue;
 						if (OperationSystem.IsBusy)

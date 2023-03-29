@@ -67,12 +67,12 @@ namespace YooAsset
 					buffer.WriteBool(PackageBundle.IsRawFile);
 					buffer.WriteByte(PackageBundle.LoadMethod);
 					buffer.WriteUTF8Array(PackageBundle.Tags);
-				}
-				buffer.WriteUTF8Array(PackageManifest.AssemblyAddresses);
+                    buffer.WriteInt32Array(PackageBundle.ReferenceIDs);
+                }
+                buffer.WriteUTF8Array(PackageManifest.AssemblyAddresses);
 				buffer.WriteUTF8Array(PackageManifest.DependAssemblyAddresses);
-
-				// 写入文件流
-				buffer.WriteToStream(fs);
+                // 写入文件流
+                buffer.WriteToStream(fs);
 				fs.Flush();
 			}
 		}
@@ -132,7 +132,8 @@ namespace YooAsset
 					PackageBundle.IsRawFile = buffer.ReadBool();
 					PackageBundle.LoadMethod = buffer.ReadByte();
 					PackageBundle.Tags = buffer.ReadUTF8Array();
-					manifest.BundleList.Add(PackageBundle);
+					PackageBundle.ReferenceIDs = buffer.ReadInt32Array();
+                    manifest.BundleList.Add(PackageBundle);
 				}
 
 				manifest.AssemblyAddresses = buffer.ReadUTF8Array();
